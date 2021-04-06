@@ -1,8 +1,3 @@
-<?php
-error_reporting(-1);
-ini_set('display_errors','On')
-?>
-
 <!DOCTYPE html>
 <html lang="de">
 <head>
@@ -17,6 +12,11 @@ ini_set('display_errors','On')
         <h1>Willkommen</h1>
     </div>
 </header>
+<div class="container">
+    <?php
+        include 'register_form.php';
+    ?>
+</div>
 <script src="assets/js/bootstrap.bundle.js"></script>
 </body>
 </html>
