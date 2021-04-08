@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <link rel="stylesheet" href="assets/css/bootstrap.min.css">
     <link rel="stylesheet" href="assets/css/style.css">
-
+    <script src="assets/js/bootstrap.bundle.js"></script>
     <title>Web Anwendung</title>
 </head>
 <body>
