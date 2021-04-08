@@ -29,8 +29,10 @@ function emailIsUsed($conn, $email) {
 function insertUser($conn, $email, $password, $first_name, $given_name, $street_name, $street_number, $post_code, $city, $phone_numer) {
     $id = createUniqueID();
     $rights_id = insertRights($conn);
+    $active = 0;
+    $vkey = createVkey($email);
         $hash_password = hashPassword($password);
-        $sql = "INSERT INTO user(id, email, first_name, given_name, street_name, street_number, post_code, city, phone_number, password, rights) VALUES (?,?,?,?,?,?,?,?,?,?,?);";
+        $sql = "INSERT INTO user(id, email, first_name, given_name, street_name, street_number, post_code, city, phone_number, password, rights, active, vkey) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?);";
         $stmt = mysqli_stmt_init($conn);
 
         if(!mysqli_stmt_prepare($stmt,$sql)){
@@ -38,8 +40,11 @@ function insertUser($conn, $email, $password, $first_name, $given_name, $street_
             exit();
         }
 
-        mysqli_stmt_bind_param($stmt, "sssssiisiss",$id,$email, $first_name, $given_name, $street_name, $street_number, $post_code, $city, $phone_numer, $hash_password, $rights_id);
-        mysqli_stmt_execute($stmt);
+        mysqli_stmt_bind_param($stmt, "sssssiisissis",$id,$email, $first_name, $given_name, $street_name, $street_number, $post_code, $city, $phone_numer, $hash_password, $rights_id, $active, $vkey);
+        if(mysqli_stmt_execute($stmt)) {
+
+            emailVkey($email,$vkey);
+        }
         mysqli_stmt_close($stmt);
 }
 
@@ -130,4 +135,21 @@ function invalidInputStringLen(&...$args) {
         }
     }
     return false;
+}
+
+function createVkey($email){
+    return md5(time().$email);
+}
+
+//TODO Configure Xampp on mac to send mail
+function emailVkey($email, $vkey) {
+    $subject = "Email Verifictaion";
+    $message = "<a href='http://localhost/verify.php?vkey=$vkey>Register Account</a>'";
+    $headers = "From: phptestm01@gmail.com \r\n";
+    $headers .= "MIME-Version: 1.0" . "\r\n";
+    $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
+
+    if(mail($email,$subject,$message,$headers)) {
+        header('location:../verified.php');
+    }
 }
