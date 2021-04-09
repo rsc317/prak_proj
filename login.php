@@ -2,8 +2,8 @@
     include_once 'header.php';
 ?>
     <section>
-        <h2>Sign Up</h2>
-        <form name="loginForm" id="loginForm" action="include/login.inc.php" method="post">
+        <h2>Login</h2>
+        <form name="loginForm" id="loginForm" action="login.php" method="post">
             <div class="form-group">
                 <label for="email">E-Mail</label>
                 <input type="email" name="email" id="email" placeholder="Email/Username" required>

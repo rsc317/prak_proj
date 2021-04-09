@@ -1,4 +1,4 @@
 <?php
 include_once 'header.php';
-echo "THANK YOU EMAIL SEND";
+echo "Your account hast been activated, please click on <a href='http://localhost/login.php'>Link</a> and login";
 include_once 'footer.php';
