@@ -1,3 +1,6 @@
+<?php
+    session_start();
+?>
 <!DOCTYPE html>
 <html lang="de">
 <head>
@@ -8,13 +11,24 @@
     <title>Web Anwendung</title>
 </head>
 <body>
-<nav>
-    <div class="card-header">
-        <a href="index.php"><h1>Willkommen</h1></a>
-        <ul>
-            <li><a href="signup.php">Sign Up</a></li>
-            <li><a href ="login.php">Login</a></li>
-        </ul>
-    </div>
-</nav>
-<div class="container">
+<header>
+    <nav class="navbar navbar-expand-md navbar-dark border-top bg-dark">
+        <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav mr-auto">
+                <?php
+                if(isset($_SESSION["id"])){
+                    echo'<li class="nav-item"><a class="nav-link" href="index.php">Home</a></li>
+                         <li class="nav-item"><a class="nav-link" href="include/logout.inc.php">Logout</a></li>';
+                }
+                else {
+                    echo'<li class="nav-item"><a class="nav-link" href="signup.php">Signup</a></li>
+                         <li class="nav-item"><a class="nav-link" href="login.php">Login</a></li>';
+                }
+                ?>
+            </ul>
+        </div>
+    </nav>
+</header>
+<main role="main" class="container">
+<div class="carousel slide">
+    <div class="carousel-inner">

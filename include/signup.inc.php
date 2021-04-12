@@ -1,38 +1,85 @@
 <?php
-
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
-require_once '/Users/emircan/PhpstormProjects/Praktikums_Projekt/lib/PHPMailer/src/Exception.php';
-require_once '/Users/emircan/PhpstormProjects/Praktikums_Projekt/lib/PHPMailer/src/PHPMailer.php';
-require_once '/Users/emircan/PhpstormProjects/Praktikums_Projekt/lib/PHPMailer/src/SMTP.php';
+require_once '../lib/PHPMailer/src/Exception.php';
+require_once '../lib/PHPMailer/src/PHPMailer.php';
+require_once '../lib/PHPMailer/src/SMTP.php';
+require_once 'functions.inc.php';
+require_once 'dbc.inc.php';
 
 const GUSER = 'phptestm01@gmail.com';
 const GPWD = 'testphpp';
 
-//@emailIsUsed(...) checks if the email address already exists
-function emailIsUsed($conn, $email) {
-    $sql = "SELECT * FROM user WHERE email = ?;";
-    $stmt = mysqli_stmt_init($conn);
+if(isset($_POST['signup'])){
 
-    if(!mysqli_stmt_prepare($stmt,$sql)){
-        header("location: ../signup.php?error=stmtfailed");
+    $email = $_POST['email'];
+    $password = $_POST['password'];
+    $repeat_password = $_POST['repeat_password'];
+    $first_name = $_POST['first_name'];
+    $given_name = $_POST['given_name'];
+    $street_name =  $_POST['street_name'];
+    $street_number = $_POST['street_number'];
+    $post_code = $_POST['post_code'];
+    $city = $_POST['city'];
+    $phone_numer = $_POST['phone_number'];
+
+    if (emptyInputSignUp($email, $password, $repeat_password, $first_name, $given_name, $street_name, $street_number, $post_code, $city, $phone_numer) !== false) {
+        header('location: ../signup.php?error=emptyInput');
         exit();
     }
 
-    mysqli_stmt_bind_param($stmt, "s",$email);
-    mysqli_stmt_execute($stmt);
-
-    $result = mysqli_stmt_get_result($stmt);
-
-    if(mysqli_fetch_assoc($result)){
-        mysqli_stmt_close($stmt);
-        return true;
+    if (invalidName($first_name) !== false) {
+        header('location: ../signup.php?error=invalidName');
+        exit();
     }
-    else {
-        mysqli_stmt_close($stmt);
-        return false;
+
+    if (invalidName($given_name) !== false) {
+        header('location: ../signup.php?error=invalidName');
+        exit();
     }
+
+    if (invalidName($street_name) !== false) {
+        header('location: ../signup.php?error=invalidName');
+        exit();
+    }
+
+    if(invalidInputStringLen($first_name,$given_name,$street_name) !== false) {
+        header('location: ../signup.php?error=invalidStringLen');
+        exit();
+    }
+
+    if (invalidNumber($post_code) !== false) {
+        header('location: ../signup.php?error=invalidNumber');
+        exit();
+    }
+
+    if (invalidNumber($phone_numer) !== false) {
+        header('location: ../signup.php?error=invalidNumber');
+        exit();
+    }
+
+    if (invalidEmail($email) !== false) {
+        header('location: ../signup.php?error=invalidEmail');
+        exit();
+    }
+
+    if (emailIsUsed($conn, $email) !== false) {
+        header('location: ../signup.php?error=emailAlreadyExists');
+        exit();
+    }
+
+    if (passwordMatch($password, $repeat_password) !== false) {
+        header('location: ../signup.php?error=passwordDontMatch');
+        exit();
+    }
+
+    if(invalidPassword($password) !== false) {
+        header('location: ../signup.php?error=invalidPassword');
+        exit();
+    }
+
+    insertUser($conn, $email, $password, $first_name, $given_name, $street_name, $street_number, $post_code, $city, $phone_numer);
 }
 
 //@insertUser(...) inserts a user into the database
@@ -157,11 +204,11 @@ function sendMail($to, $from, $from_name, $subject, $body) {
     global $error;
     $mail = new PHPMailer();
     $mail->IsSMTP();
-    $mail->SMTPDebug = 0;
+    $mail->SMTPDebug = 1;
     $mail->SMTPAuth = true;
-    $mail->SMTPSecure = 'ssl';
+    $mail->SMTPSecure = 'tls';
     $mail->Host = 'smtp.gmail.com';
-    $mail->Port = 465;
+    $mail->Port = 587;
     $mail->Username = GUSER;
     $mail->Password = GPWD;
     $mail->SetFrom($from, $from_name);
@@ -177,8 +224,6 @@ function sendMail($to, $from, $from_name, $subject, $body) {
     }
 }
 
-
-//TODO Configure Xampp on mac to send mail
 function emailVkey($email, $vkey) {
     $message = "Hi, please klick on <a href='http://localhost/verify.php?vkey=$vkey'>Link</a> to verificate your E-Mail address :)";
 
