@@ -6,49 +6,49 @@ include_once 'header.php';
         <h2>Sign Up</h2>
         <div id="error"></div>
         <form name="signupForm" id="signupForm" action="include/signup.inc.php" method="post">
-            
-                <label class="sr-only" for="email">E-Mail</label>
-                <input class="form-control"type="email" name="email" id="email" placeholder="Email/Username" required>
-            
-            
-               <label class="sr-only" for="password">Password</label>
-                <input class="form-control"type="password" name="password" id="password" placeholder="Password" required>
+
+                <label for="email">E-Mail</label>
+                <input  type="email" name="email" id="email" placeholder="Email/Username" required>
             
             
-               <label class="sr-only"for="repeat_password">Repeat Password</label>
-                <input class="form-control"type="password" name="repeat_password" id="repeat_password" placeholder="Password" required>
+               <label for="password">Password</label>
+                <input  type="password" name="password" id="password" placeholder="Password" required>
             
             
-               <label class="sr-only"for="first_name">Firstname</label>
-                <input class="form-control"type="text" name="first_name" id="first_name" placeholder="Firstname" required>
+               <label for="repeat_password">Repeat Password</label>
+                <input  type="password" name="repeat_password" id="repeat_password" placeholder="Password" required>
             
             
-               <label class="sr-only"for="given_name">Givenname</label>
-                <input class="form-control"type="text" name="given_name" id="given_name" placeholder="Givenname" required>
+               <label for="first_name">Firstname</label>
+                <input  type="text" name="first_name" id="first_name" placeholder="Firstname" required>
             
             
-               <label class="sr-only"for="street_name">Street</label>
-                <input class="form-control"type="text" name="street_name" id="street_name" placeholder="Street" required>
+               <label for="given_name">Givenname</label>
+                <input  type="text" name="given_name" id="given_name" placeholder="Givenname" required>
             
             
-               <label class="sr-only"for="street_number">Number</label>
-                <input class="form-control"type="text" name="street_number" id="street_number" placeholder="Streetnumber" required>
+               <label for="street_name">Street</label>
+                <input  type="text" name="street_name" id="street_name" placeholder="Street" required>
             
             
-               <label class="sr-only"for="post_code">Postcode</label>
-                <input class="form-control"type="number" name="post_code" id="post_code" placeholder="Postcode" required>
+               <label for="street_number">Number</label>
+                <input  type="text" name="street_number" id="street_number" placeholder="Streetnumber" required>
             
             
-               <label class="sr-only"for="city">City</label>
-                <input class="form-control"type="text" name="city" id="city" placeholder="City" required>
+               <label for="post_code">Postcode</label>
+                <input  type="number" name="post_code" id="post_code" placeholder="Postcode" required>
             
             
-               <label class="sr-only"for="phone_number">Phonenumber</label>
-                <input class="form-control"type="number" name="phone_number" id="phone_number" placeholder="Phonenumber" required>
+               <label for="city">City</label>
+                <input  type="text" name="city" id="city" placeholder="City" required>
+            
+            
+               <label for="phone_number">Phonenumber</label>
+                <input  type="number" name="phone_number" id="phone_number" placeholder="Phonenumber" required>
             
 
 
-            <button class="btn btn-lg btn-primary btn-block"  type="submit" name="signup">Sign Up</button>
+            <button type="submit" name="signup">Sign Up</button>
             <br>
         </form>
         <?php

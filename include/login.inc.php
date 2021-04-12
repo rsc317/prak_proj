@@ -27,14 +27,14 @@ function emptyInputLogin($email, $password) {
 }
 
 function loginUser($conn, $email, $password) {
-    $email_exists = emailIsUsed($conn,$email);
+    $user_data = emailIsUsed($conn,$email);
 
-    if($email_exists === false) {
+    if($user_data === false) {
         header("location: ../login.php?error=invalidLogin");
         exit();
     }
 
-    $hashed_password = $email_exists['password'];
+    $hashed_password = $user_data['password'];
     $check_password = password_verify($password,$hashed_password);
 
     if($check_password === false) {
@@ -43,8 +43,21 @@ function loginUser($conn, $email, $password) {
     }
     else if($check_password === true) {
         session_start();
-        $_SESSION["id"] = $email_exists["id"];
+        startSession($user_data);
         header("location: ../index.php");
         exit();
     }
+}
+
+function startSession($user_data) {
+    session_start();
+    $_SESSION['email'] = $user_data["email"];
+    $_SESSION['first_name'] = $user_data['first_name'];
+    $_SESSION['given_name'] = $user_data['given_name'];
+    $_SESSION['street_name'] = $user_data['street_name'];
+    $_SESSION['street_number'] = $user_data['street_number'];
+    $_SESSION['post_code'] = $user_data['post_code'];
+    $_SESSION['city'] = $user_data['city'];
+    $_SESSION['phone_number'] = $user_data['phone_number'];
+    $_SESSION['password'] = $user_data['password'];
 }

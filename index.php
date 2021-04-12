@@ -4,7 +4,7 @@
 
 <div class="form-group">
     <?php
-    if(isset($_SESSION["id"])){
+    if(isset($_SESSION["email"])){
         include_once 'welcome.php';
     }
     else {

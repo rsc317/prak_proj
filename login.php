@@ -3,12 +3,12 @@
 ?>
     <section>
         <form name="loginForm" id="loginForm" action="include/login.inc.php" method="post">
-            <h1 class="h3 mb-3 font-weight-normal">Login</h1>
-            <label class="sr-only" for="email">E-Mail</label>
-            <input type="email" name="email" id="email" placeholder="Email/Username" class="form-control" required autofocus>
-            <label class="sr-only" for="password">Password</label>
-            <input type="password" name="password" id="password" placeholder="Password" class="form-control" required autofocus>
-            <button class="btn btn-lg btn-primary btn-block" type="submit" name="login">Login</button><br>
+            <h1>Login</h1>
+            <label for="email">E-Mail</label>
+            <input type="email" name="email" id="email" placeholder="Email/Username" required>
+            <label for="password">Password</label>
+            <input type="password" name="password" id="password" placeholder="Password" class="form-control" required>
+            <button type="submit" name="login">Login</button><br>
         </form>
         <?php
         if(isset($_GET['error'])) {

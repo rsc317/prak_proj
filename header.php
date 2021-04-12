@@ -5,6 +5,7 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="assets/css/bootstrap.min.css">
     <link rel="stylesheet" href="assets/css/style.css">
     <script src="assets/js/bootstrap.bundle.js"></script>
@@ -12,23 +13,16 @@
 </head>
 <body>
 <header>
-    <nav class="navbar navbar-expand-md navbar-dark border-top bg-dark">
-        <div class="collapse navbar-collapse" id="navbarCollapse">
-            <ul class="navbar-nav mr-auto">
+    <nav>
                 <?php
-                if(isset($_SESSION["id"])){
-                    echo'<li class="nav-item"><a class="nav-link" href="index.php">Home</a></li>
-                         <li class="nav-item"><a class="nav-link" href="include/logout.inc.php">Logout</a></li>';
+                if(isset($_SESSION["email"])){
+                    echo'  <a href="index.php">Home</a> 
+                           <a href="include/logout.inc.php">Logout</a> ';
                 }
                 else {
-                    echo'<li class="nav-item"><a class="nav-link" href="signup.php">Signup</a></li>
-                         <li class="nav-item"><a class="nav-link" href="login.php">Login</a></li>';
+                    echo'  <a href="signup.php">Signup</a> 
+                           <a href="login.php">Login</a> ';
                 }
                 ?>
-            </ul>
-        </div>
     </nav>
 </header>
-<main role="main" class="container">
-<div class="carousel slide">
-    <div class="carousel-inner">
