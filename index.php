@@ -1,7 +1,6 @@
 <?php
     include_once 'header.php';
     ?>
-
 <div class="form-group">
     <?php
     if(isset($_SESSION["email"])){

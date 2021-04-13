@@ -35,11 +35,6 @@ if(isset($_POST['signup'])){
         exit();
     }
 
-    if(invalidInputStringLen($first_name,$given_name,$street_name) !== false) {
-        header('location: ../signup.php?error=invalidStringLen');
-        exit();
-    }
-
     if (invalidNumber($post_code) !== false) {
         header('location: ../signup.php?error=invalidNumber');
         exit();

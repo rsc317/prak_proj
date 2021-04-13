@@ -1,7 +1,7 @@
 <?php
 require_once 'dbc.inc.php';
 require_once 'functions.inc.php';
-
+session_start();
 if(isset($_POST['update'])){
 
     $email = $_POST['email'];
@@ -15,105 +15,118 @@ if(isset($_POST['update'])){
     $city = $_POST['city'];
     $phone_number = $_POST['phone_number'];
 
-    if ("" != trim($first_name) && invalidName($first_name) !== false) {
+    if (!(empty($first_name)) && invalidName($first_name) !== false) {
         header('location: ../mydata.php?error=invalidName');
         exit();
     }
 
-    if ("" != trim($given_name) && invalidName($given_name) !== false) {
+    if (!(empty($given_name)) && invalidName($given_name) !== false) {
         header('location: ../mydata.php?error=invalidName');
         exit();
     }
 
-    if ("" != trim($street_name) && invalidName($street_name) !== false) {
+    if (!(empty($street_name)) && invalidName($street_name) !== false) {
         header('location: ../mydata.php?error=invalidName');
         exit();
     }
 
-    if ("" != trim(post_code) && invalidNumber($post_code) !== false) {
+    if (!(empty($post_code)) && invalidNumber($post_code) !== false) {
         header('location: ../mydata.php?error=invalidNumber');
         exit();
     }
 
-    if ("" != trim($phone_number) && invalidNumber($phone_number) !== false) {
+    if (!(empty($phone_number)) && invalidNumber($phone_number) !== false) {
         header('location: ../mydata.php?error=invalidNumber');
         exit();
     }
 
-    if ("" != trim($email) && invalidEmail($email) !== false) {
+    if (!(empty($email)) && invalidEmail($email) !== false) {
         header('location: ../mydata.php?error=invalidEmail');
         exit();
     }
 
-    if ("" != trim($email) && emailIsUsed($conn, $email) !== false) {
+    if (!(empty($email)) && emailIsUsed($conn, $email) !== false) {
         header('location: ../mydata.php?error=emailAlreadyExists');
         exit();
     }
 
-    if ("" != trim($password) && passwordMatch($password, $repeat_password) !== false) {
+    if (!(empty($password)) && passwordMatch($password, $repeat_password) !== false) {
         header('location: ../mydata.php?error=passwordDontMatch');
         exit();
     }
 
-    if("" != trim($password) && invalidPassword($password) !== false) {
+    if(!(empty($password)) && invalidPassword($password) !== false) {
         header('location: ../mydata.php?error=invalidPassword');
         exit();
     }
+
     updateUser($conn, $email, $password, $first_name, $given_name, $street_name, $street_number, $post_code, $city, $phone_number);
 }
 
 function updateUser($conn, $email, $password, $first_name, $given_name, $street_name, $street_number, $post_code, $city, $phone_number) {
     $sql_array = array();
-    $params = array();
+    $params = [];
     $type = "";
-    if("" != trim($email)){
-        array_push($sql_array,"email = ?,");
+
+    if("" !== trim($email)){
+        array_push($sql_array,'email=?');
         array_push($params, $email);
-        $type .= "s";
-
+        $type .= 's';
+        $_SESSION['email'] = $email;
     }
-    if("" != trim($first_name)){
-        array_push($sql_array,"first_name=?");
+    if("" !== trim($first_name)){
+        array_push($sql_array,'first_name=?');
         array_push($params, $first_name);
-        $type .= "s";
+        $type .= 's';
+        $_SESSION['first_name'] = $first_name;
     }
-    if("" != trim($given_name)){
-        array_push($sql_array,"first_name=?");
+    if("" !== trim($given_name)){
+        array_push($sql_array,'given_name=?');
         array_push($params, $given_name);
-        $type .= "s";
+        $type .= 's';
+        $_SESSION['given_name'] = $given_name;
     }
-    if("" != trim($street_name)){
-        array_push($sql_array,"first_name=?");
+    if("" !== trim($street_name)){
+        array_push($sql_array,'street_name=?');
         array_push($params, $street_name);
-        $type .= "s";
+        $type .= 's';
+        $_SESSION['street_name'] = $street_name;
     }
-    if("" != trim($street_number)){
-        array_push($sql_array,"first_name=?");
+    if("" !== trim($street_number)){
+        array_push($sql_array,'street_number=?');
         array_push($params, $street_number);
-        $type .= "i";
+        $type .= 'i';
+        $_SESSION['street_number'] = $street_number;
     }
-    if("" != trim($post_code)){
-        array_push($sql_array,"first_name=?");
+    if("" !== trim($post_code)){
+        array_push($sql_array,'post_code=?');
         array_push($params, $post_code);
-        $type .= "i";
+        $type .= 'i';
+        $_SESSION['post_code'] = $post_code;
     }
-    if("" != trim($city)){
-        array_push($sql_array,"first_name=?");
+    if("" !== trim($city)){
+        array_push($sql_array,'city=?');
         array_push($params, $city);
-        $type .= "s";
+        $type .= 's';
+        $_SESSION['city'] = $city;
     }
-    if("" != trim($phone_number)){
-        array_push($sql_array,"first_name=?");
+    if("" !== trim($phone_number)){
+        array_push($sql_array,'phone_number=?');
         array_push($params, $phone_number);
-        $type .= "i";
+        $type .= 'i';
+        $_SESSION['phone_number'] = $phone_number;
     }
-    if("" != trim($password)){
-        array_push($sql_array,"first_name=?");
+    if("" !== trim($password)){
+        array_push($sql_array,'password=?');
         array_push($params, $password);
-        $type .= "s";
+        $type .= 's';
+        $_SESSION['password'] = $password;
     }
 
-    $sql = "UPDATE user SET " . join(" ,", $sql_array) . "WHERE email=?";
+    $type .= "s";
+    array_push($params, $_SESSION['email']);
+
+    $sql = "UPDATE user SET " . join(", ", $sql_array) . " WHERE email=?;";
 
     $stmt = mysqli_stmt_init($conn);
 
@@ -122,7 +135,7 @@ function updateUser($conn, $email, $password, $first_name, $given_name, $street_
         exit();
     }
 
-    mysqli_stmt_bind_param($stmt, $type,$email, $params);
+    mysqli_stmt_bind_param($stmt,$type,...$params);
     if(mysqli_stmt_execute($stmt)) {
         header("location: ../mydata.php?error=none");
         exit();

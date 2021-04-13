@@ -1,10 +1,11 @@
-<div id="mySidenav" class="sidenav">
-    <li><a href="mydata.php">My Data</a></li>
-    <li><a href="listpersons.php">List Persons</a></li>
-    <li><a href="search.php">Search</a></li>
-</div>
+<?php
+include_once 'sidenav.php'
+?>
+
 <div id="main">
     <?php
-    include_once 'mydata.php'
+    $name = $_SESSION['first_name'];
+    $family_name = $_SESSION['given_name'];
+    echo "<h1> Willkommen $name $family_name</h1>"
     ?>
 </div>

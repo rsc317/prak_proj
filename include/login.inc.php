@@ -43,14 +43,13 @@ function loginUser($conn, $email, $password) {
     }
     else if($check_password === true) {
         session_start();
-        startSession($user_data);
+        setSessionData($user_data);
         header("location: ../index.php");
         exit();
     }
 }
 
-function startSession($user_data) {
-    session_start();
+function setSessionData($user_data) {
     $_SESSION['email'] = $user_data["email"];
     $_SESSION['first_name'] = $user_data['first_name'];
     $_SESSION['given_name'] = $user_data['given_name'];

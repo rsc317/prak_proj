@@ -49,7 +49,7 @@ function emptyInput($email, $password, $repeat_password, $first_name, $given_nam
 
 //@invalidname($name) checks if the input value contains only letters
 function invalidName($name){
-    if(!preg_match("/[a-zA-Z]*$/", $name)) {
+    if(!ctype_alpha($name) || invalidInputStringLen($name)) {
         return true;
     }
     return false;
@@ -57,7 +57,7 @@ function invalidName($name){
 
 //@invalidNumber($number) checks if the number contains only numbers
 function invalidNumber($number){
-    if(!preg_match("/[0-9]*$/", $number)) {
+    if(!preg_match("/^\d+$/", $number)) {
         return true;
     }
     return false;
@@ -85,13 +85,11 @@ function invalidPassword($password) {
     return false;
 }
 
-//@invalidInputStringLen(...) checks if the input value is at least 3 characters long and highest 64 characters long
-function invalidInputStringLen(&...$args) {
-    foreach($args as $value) {
-        $value_len = strlen($value);
-        if($value_len < 2 || $value_len > 63) {
-            return true;
-        }
+//@invalidInputStringLen(...) checks if the input value is at least 2 characters long and highest 64 characters long
+function invalidInputStringLen($value) {
+    $value_len = strlen($value);
+    if ($value_len < 2 || $value_len > 63) {
+        return true;
     }
     return false;
 }
