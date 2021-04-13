@@ -1,6 +1,7 @@
 <?php
 require_once 'dbc.inc.php';
 require_once 'functions.inc.php';
+
 session_start();
 if(isset($_POST['update'])){
 
@@ -113,7 +114,7 @@ function updateUser($conn, $email, $password, $first_name, $given_name, $street_
     if("" !== trim($phone_number)){
         array_push($sql_array,'phone_number=?');
         array_push($params, $phone_number);
-        $type .= 'i';
+        $type .= 's';
         $_SESSION['phone_number'] = $phone_number;
     }
     if("" !== trim($password)){
@@ -121,6 +122,11 @@ function updateUser($conn, $email, $password, $first_name, $given_name, $street_
         array_push($params, $password);
         $type .= 's';
         $_SESSION['password'] = $password;
+    }
+
+    if(!(count($params)>0)){
+        header("location: ../mydata.php?error=noinput");
+        exit();
     }
 
     $type .= "s";
@@ -136,11 +142,15 @@ function updateUser($conn, $email, $password, $first_name, $given_name, $street_
     }
 
     mysqli_stmt_bind_param($stmt,$type,...$params);
+
     if(mysqli_stmt_execute($stmt)) {
         header("location: ../mydata.php?error=none");
-        exit();
+    }
+    else {
+        header("location: ../mydata.php?error=stmtfailed");
     }
     mysqli_stmt_close($stmt);
+    exit();
 }
 
 function verifyPassword($password){

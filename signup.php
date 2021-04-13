@@ -34,7 +34,7 @@ include_once 'header.php';
             <input type="text" name="city" id="city" placeholder="City" required>
 
             <label for="phone_number">Phonenumber</label>
-            <input type="number" name="phone_number" id="phone_number" placeholder="Phonenumber" required>
+            <input type="text" name="phone_number" id="phone_number" placeholder="Phonenumber" required>
 
             <button type="submit" name="signup">Sign Up</button>
             <br>

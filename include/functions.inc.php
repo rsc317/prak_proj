@@ -49,7 +49,7 @@ function emptyInput($email, $password, $repeat_password, $first_name, $given_nam
 
 //@invalidname($name) checks if the input value contains only letters
 function invalidName($name){
-    if(!ctype_alpha($name) || invalidInputStringLen($name)) {
+    if(!ctype_alpha($name) && invalidInputStringLen($name)) {
         return true;
     }
     return false;

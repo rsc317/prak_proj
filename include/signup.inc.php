@@ -40,11 +40,6 @@ if(isset($_POST['signup'])){
         exit();
     }
 
-    if (invalidNumber($phone_numer) !== false) {
-        header('location: ../signup.php?error=invalidNumber');
-        exit();
-    }
-
     if (invalidEmail($email) !== false) {
         header('location: ../signup.php?error=invalidEmail');
         exit();
@@ -83,7 +78,7 @@ function insertUser($conn,$email, $password, $first_name, $given_name, $street_n
         exit();
     }
 
-    mysqli_stmt_bind_param($stmt, "sssssiisissis",$id,$email, $first_name, $given_name, $street_name, $street_number, $post_code, $city, $phone_numer, $hash_password, $rights_id, $active, $vkey);
+    mysqli_stmt_bind_param($stmt, "sssssiissssis",$id,$email, $first_name, $given_name, $street_name, $street_number, $post_code, $city, $phone_numer, $hash_password, $rights_id, $active, $vkey);
     if(mysqli_stmt_execute($stmt)) {
         emailVkey($email,$vkey);
         header("location: ../signup.php?error=none");
