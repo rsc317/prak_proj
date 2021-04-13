@@ -2,7 +2,6 @@
 require_once 'dbc.inc.php';
 require_once 'functions.inc.php';
 
-session_start();
 if(isset($_POST['update'])){
 
     $email = $_POST['email'];
@@ -46,7 +45,7 @@ if(isset($_POST['update'])){
         exit();
     }
 
-    if (!(empty($email)) && emailIsUsed($conn, $email) !== false) {
+    if (!(empty($email)) && getDataByEmail($conn, $email) !== false) {
         header('location: ../mydata.php?error=emailAlreadyExists');
         exit();
     }
@@ -68,12 +67,11 @@ function updateUser($conn, $email, $password, $first_name, $given_name, $street_
     $sql_array = array();
     $params = [];
     $type = "";
-
+    session_start();
     if("" !== trim($email)){
         array_push($sql_array,'email=?');
         array_push($params, $email);
         $type .= 's';
-        $_SESSION['email'] = $email;
     }
     if("" !== trim($first_name)){
         array_push($sql_array,'first_name=?');

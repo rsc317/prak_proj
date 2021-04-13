@@ -27,7 +27,7 @@ function emptyInputLogin($email, $password) {
 }
 
 function loginUser($conn, $email, $password) {
-    $user_data = emailIsUsed($conn,$email);
+    $user_data = getDataByEmail($conn,$email);
 
     if($user_data === false) {
         header("location: ../login.php?error=invalidLogin");

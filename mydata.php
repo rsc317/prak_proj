@@ -1,6 +1,11 @@
 <?php
 include_once 'header.php';
 include_once 'sidenav.php';
+
+if(!isset($_SESSION['email'])){
+    header("location: ../login.php");
+    exit();
+}
 ?>
 
     <section>
@@ -9,7 +14,7 @@ include_once 'sidenav.php';
         <form name="myDataForm" id="myDataForm" action="include/mydata.inc.php" method="post">
 
             <label for="email">E-Mail</label>
-            <input type="email" name="email" id="email" placeholder="<?php echo $_SESSION['email']; ?>">
+            <input type="email" name="email" id="email" placeholder="">
 
             <label for="password">Password</label>
             <input type="text" name="password" id="password" placeholder="password">

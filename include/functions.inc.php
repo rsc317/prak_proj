@@ -10,7 +10,7 @@ const GUSER = 'phptestm01@gmail.com';
 const GPWD = 'testphpp';
 
 //@emailIsUsed(...) checks if the email address already exists
-function emailIsUsed($conn, $email) {
+function getDataByEmail($conn, $email) {
     $sql = "SELECT * FROM user WHERE email = ?;";
     $stmt = mysqli_stmt_init($conn);
 
@@ -24,12 +24,11 @@ function emailIsUsed($conn, $email) {
 
     $result = mysqli_stmt_get_result($stmt);
 
+    mysqli_stmt_close($stmt);
     if($row = mysqli_fetch_assoc($result)){
-        mysqli_stmt_close($stmt);
         return $row;
     }
     else {
-        mysqli_stmt_close($stmt);
         return false;
     }
 }
@@ -130,4 +129,27 @@ function emailVkey($email, $vkey) {
     }
     if (!empty($error)) echo $error;
 
+}
+
+function getRights($id) {
+    $sql = "SELECT * FROM rights WHERE id = ?;";
+    $stmt = mysqli_stmt_init($conn);
+
+    if(!mysqli_stmt_prepare($stmt,$sql)){
+        header("location: ../signup.php?error=stmtfailed");
+        exit();
+    }
+
+    mysqli_stmt_bind_param($stmt, "s",$id);
+    mysqli_stmt_execute($stmt);
+
+    $result = mysqli_stmt_get_result($stmt);
+
+    mysqli_stmt_close($stmt);
+    if($row = mysqli_fetch_assoc($result)){
+        return $row;
+    }
+    else {
+        return false;
+    }
 }

@@ -4,36 +4,22 @@ include_once 'sidenav.php';
 require_once 'include/listpersons.inc.php';
 require_once 'include/dbc.inc.php';
 
-$page = isset($_GET['page']) && is_numeric($_GET['page']) ? $_GET['page'] : 1;
-$rop = 5;
-$c_page = ($page - 1) * $rop;
+if(!isset($_SESSION['email'])){
+    header("location: ../login.php");
+    exit();
+}
 
-$result = getLimitedUsers($conn, $c_page, $rop);
-$total_pages = getTotalNumberOfUsers($conn);
 ?>
     <table>
         <tr>
             <th>E-Mail</th>
             <th>Firstname</th>
-            <th>Givenname</th>
-            <th>Streetname</th>
-            <th>Number</th>
-            <th>Postcode</th>
-            <th>City</th>
-            <th>Phonenumber</th>
-            <th>Active</th>
+
         </tr>
         <?php while ($row = $result->fetch_assoc()): ?>
             <tr>
-                <td><?php echo $row['email']; ?></td>
+                <td><a href = details.php?email=<?php echo $row['email']; ?>><?php echo $row['email']; ?></a></td>
                 <td><?php echo $row['first_name']; ?></td>
-                <td><?php echo $row['given_name']; ?></td>
-                <td><?php echo $row['street_name']; ?></td>
-                <td><?php echo $row['street_number']; ?></td>
-                <td><?php echo $row['post_code']; ?></td>
-                <td><?php echo $row['city']; ?></td>
-                <td><?php echo $row['phone_number']; ?></td>
-                <td><?php echo $row['active']; ?></td>
             </tr>
         <?php endwhile; ?>
     </table>
