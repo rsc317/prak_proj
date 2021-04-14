@@ -2,7 +2,6 @@
 include_once 'header.php';
 include_once 'sidenav.php';
 require_once 'include/listpersons.inc.php';
-require_once 'include/dbc.inc.php';
 
 if(!isset($_SESSION['email'])){
     header("location: ../login.php");
@@ -14,7 +13,6 @@ if(!isset($_SESSION['email'])){
         <tr>
             <th>E-Mail</th>
             <th>Firstname</th>
-
         </tr>
         <?php while ($row = $result->fetch_assoc()): ?>
             <tr>
@@ -61,6 +59,8 @@ if(!isset($_SESSION['email'])){
             <li class="next"><a href="listpersons.php?page=<?php echo $page + 1 ?>">Next</a></li>
         <?php endif; ?>
     </ul>
-<?php endif; ?>
+
+<?php endif;
+?>
 <?php
 include_once 'footer.php';

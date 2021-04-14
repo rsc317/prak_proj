@@ -45,7 +45,7 @@ if(isset($_POST['update'])){
         exit();
     }
 
-    if (!(empty($email)) && getDataByEmail($conn, $email) !== false) {
+    if (!(empty($email)) && validateEmail($conn, $email) !== false) {
         header('location: ../mydata.php?error=emailAlreadyExists');
         exit();
     }

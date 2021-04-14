@@ -1,16 +1,38 @@
 <?php
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
-require_once '../lib/PHPMailer/src/Exception.php';
-require_once '../lib/PHPMailer/src/PHPMailer.php';
-require_once '../lib/PHPMailer/src/SMTP.php';
-require_once 'dbc.inc.php';
+require_once $_SERVER['DOCUMENT_ROOT'].'/lib/PHPMailer/src/Exception.php';
+require_once $_SERVER['DOCUMENT_ROOT'].'/lib/PHPMailer/src/PHPMailer.php';
+require_once $_SERVER['DOCUMENT_ROOT'].'/lib/PHPMailer/src/SMTP.php';
 
 const GUSER = 'phptestm01@gmail.com';
 const GPWD = 'testphpp';
 
+function validateEmail($conn, $email){
+    $sql = "SELECT email FROM user WHERE email = ?;";
+    $stmt = mysqli_stmt_init($conn);
+
+    if(!mysqli_stmt_prepare($stmt,$sql)){
+        header("location: ../signup.php?error=stmtfailed");
+        exit();
+    }
+
+    mysqli_stmt_bind_param($stmt, "s",$email);
+    mysqli_stmt_execute($stmt);
+
+    $result = mysqli_stmt_get_result($stmt);
+
+    mysqli_stmt_close($stmt);
+    if($row = mysqli_fetch_assoc($result)){
+        return $row;
+    }
+    else {
+        return false;
+    }
+}
+
 //@emailIsUsed(...) checks if the email address already exists
-function getDataByEmail($conn, $email) {
+function getUserData($conn, $email) {
     $sql = "SELECT * FROM user WHERE email = ?;";
     $stmt = mysqli_stmt_init($conn);
 
@@ -131,12 +153,12 @@ function emailVkey($email, $vkey) {
 
 }
 
-function getRights($id) {
+function getRights($conn, $id) {
     $sql = "SELECT * FROM rights WHERE id = ?;";
     $stmt = mysqli_stmt_init($conn);
 
     if(!mysqli_stmt_prepare($stmt,$sql)){
-        header("location: ../signup.php?error=stmtfailed");
+        header("location: ../index.php?error=stmtfailed");
         exit();
     }
 
@@ -150,6 +172,54 @@ function getRights($id) {
         return $row;
     }
     else {
+        return false;
+    }
+}
+//TODO doesnt return parameter right
+function getRightsId($conn, $email) {
+    $sql = "SELECT rights FROM user WHERE email = ?;";
+    $stmt = mysqli_stmt_init($conn);
+
+    if(!mysqli_stmt_prepare($stmt,$sql)){
+        header("location: ../listpersons.php?error=stmtfailed");
+        exit();
+    }
+    mysqli_stmt_bind_param($stmt,"s",$email);
+    mysqli_stmt_execute($stmt);
+
+    $result = mysqli_stmt_get_result($stmt);
+
+    mysqli_stmt_close($stmt);
+    if($row = mysqli_fetch_assoc($result)){
+        return $row;
+    }else {
+        return false;
+    }
+}
+
+function deleteUser($conn, $email) {
+    $sql = "DELETE FROM user WHERE email = ?;";
+    $stmt = mysqli_stmt_init($conn);
+
+    if(!mysqli_stmt_prepare($stmt,$sql)){
+        header("location: ../listpersons.php?error=stmtfailed");
+        exit();
+    }
+    mysqli_stmt_bind_param($stmt,"s",$email);
+
+    if(mysqli_stmt_execute($stmt)){
+        $sql = "DELETE FROM rights WHERE id = ?;";
+        $stmt = mysqli_stmt_init($conn);
+        $rights_id = getRightsId($conn, $email);
+        if(!mysqli_stmt_prepare($stmt,$sql)){
+            header("location: ../listpersons.php?error=stmtfailed");
+            exit();
+        }
+        mysqli_stmt_bind_param($stmt,"s",$rights_id);
+        mysqli_stmt_execute($stmt);
+        mysqli_stmt_close($stmt);
+        return true;
+    }else {
         return false;
     }
 }

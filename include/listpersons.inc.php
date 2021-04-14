@@ -8,7 +8,7 @@ $c_page = ($page - 1) * $rop;
 $result = getLimitedUsers($conn, $c_page, $rop);
 $total_pages = getTotalNumberOfUsers($conn);
 
-function getTotalNumberOfUsers($conn) { //total_pages
+function getTotalNumberOfUsers($conn) {
     $sql = "SELECT COUNT(*) FROM `user`";
     $stmt = mysqli_stmt_init($conn);
 

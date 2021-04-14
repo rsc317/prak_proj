@@ -7,9 +7,8 @@ if(!isset($_SESSION['email'])){
     exit();
 }
 ?>
-
     <section>
-        <h2>User Data</h2>
+        <h2>My Data</h2>
         <div id="error"></div>
         <form name="myDataForm" id="myDataForm" action="include/mydata.inc.php" method="post">
 

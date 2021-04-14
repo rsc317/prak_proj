@@ -1,56 +1,173 @@
 <?php
 include_once 'header.php';
-include_once 'sidenav.php';
+require_once 'include/details.inc.php';
+
+
+if (!isset($_SESSION['email'])) {
+    header("location: ../login.php");
+    exit();
+}
 ?>
-    <section>
-        <h2>User Data</h2>
-        <div id="error"></div>
-        <form name="myDataForm" id="myDataForm" action="include/mydata.inc.php" method="post">
+    <h2><?php echo $user_first_name . " " . $user_given_name; ?></h2>
+    <div id="error"></div>
+    <form name="myDataForm" id="myDataForm" action="include/details.inc.php" method="post">
 
-            <label for="email">E-Mail</label>
-            <input type="email" name="email" id="email" placeholder="">
+        <div class="form-group row">
+            <div class="col-xs-2">
+                <label class="form-label" for="email">E-Mail</label>
+                <?php
+                    if(isset($_SESSION['admin'])  || isset($_SESSION['super_user'])){
+                        echo '<input class="form-control" type="email" name="email" id="email" placeholder="'.$user_email.'">';
+                    }
+                    else {
+                        echo '<a>'.$user_email.'</a>';
+                    }
+                ?>
+            </div>
+            <?php
+                    if(isset($_SESSION['admin'])){
+                        echo '            <div class="col-xs-2">
+                <label class="form-label" for="password">Password</label>
+                <input class="form-control" type="text" name="password" id="password" placeholder="">
+            </div>
 
-            <label for="password">Password</label>
-            <input type="text" name="password" id="password" placeholder="password">
+            <div class="col-xs-2">
+                <label class="form-label" for="repeat_password">Repeat Password</label>
+                <input class="form-control" type="text" name="repeat_password" id="repeat_password"
+                       placeholder="">
+            </div>';
+                    }
+            ?>
 
-            <label for="repeat_password">Repeat Password</label>
-            <input type="text" name="repeat_password" id="repeat_password" placeholder="password">
+            <div class="col-xs-2">
+                <label class="form-label" for="first_name">Firstname</label>
+                <?php
+                if(isset($_SESSION['admin'])  || isset($_SESSION['super_user'])){
+                    echo '<input class="form-control" type="text" name="first_name" id="first_name" placeholder="'.$user_first_name.'">';
+                }
+                else {
+                    echo '<a>'.$user_first_name.'</a>';
+                }
+                ?>
 
-            <label for="first_name">Firstname</label>
-            <input type="text" name="first_name" id="first_name" placeholder="">
+            </div>
 
-            <label for="given_name">Givenname</label>
-            <input type="text" name="given_name" id="given_name" placeholder="">
+            <div class="col-xs-2">
+                <label class="form-label" for="given_name">Givenname</label>
+                <?php
+                if(isset($_SESSION['admin'])  || isset($_SESSION['super_user'])){
+                    echo '<input class="form-control" type="text" name="given_name" id="given_name" placeholder="'.$user_given_name.'">';
+                }
+                else {
+                    echo '<a>'.$user_given_name.'</a>';
+                }
+                ?>
+            </div>
 
-            <label for="street_name">Street</label>
-            <input type="text" name="street_name" id="street_name"
-                   placeholder="">
+            <div class="col-xs-2">
+                <label class="form-label" for="street_name">Street</label>
+                <?php
+                if(isset($_SESSION['admin'])  || isset($_SESSION['super_user'])){
+                    echo '<input class="form-control" type="text" name="street_name" id="street_name"
+                       placeholder="'.$user_street_name.'">';
+                }
+                else {
+                    echo '<a>'.$user_street_name.'</a>';
+                }
+                ?>
 
-            <label for="street_number">Number</label>
-            <input type="text" name="street_number" id="street_number"
-                   placeholder="">
+            </div>
 
-            <label for="post_code">Postcode</label>
-            <input type="number" name="post_code" id="post_code" placeholder="">
+            <div class="col-xs-2">
+                <label class="form-label" for="street_number">Number</label>
+                <?php
+                if(isset($_SESSION['admin'])  || isset($_SESSION['super_user'])){
+                    echo '<input class="form-control" type="text" name="street_number" id="street_number"
+                       placeholder="'.$user_street_number.'">';
+                }
+                else {
+                    echo '<a>'.$user_street_number.'</a>';
+                }
+                ?>
 
-            <label for="city">City</label>
-            <input type="text" name="city" id="city" placeholder="">
+            </div>
 
-            <label for="phone_number">Phonenumber</label>
-            <input type="number" name="phone_number" id="phone_number"
-                   placeholder="">
+            <div class="col-xs-2">
+                <label class="form-label" for="post_code">Postcode</label>
+                <?php
+                if(isset($_SESSION['admin'])  || isset($_SESSION['super_user'])){
+                    echo '<input class="form-control" type="number" name="post_code" id="post_code" placeholder="'.$user_post_code.'">';
+                }
+                else {
+                    echo '<a>'.$user_post_code.'</a>';
+                }
+                ?>
 
-            <label for="active">Active</label>
-            <input type="number" name="active" id="active"
-                   placeholder="">
+            </div>
 
-            <label for="rights">Rights</label>
-            <input type="number" name="rights" id="rights"
-                   placeholder="">
+            <div class="col-xs-2">
+                <label class="form-label" for="city">City</label>
+                <?php
+                if(isset($_SESSION['admin'])  || isset($_SESSION['super_user'])){
+                    echo '<input class="form-control" type="text" name="city" id="city" placeholder="'.$user_city.'">';
+                }
+                else {
+                    echo '<a>'.$user_city.'</a>';
+                }
+                ?>
 
-            <button type="submit" name="update">Update</button>
-            <br>
-        </form>
-    </section>
+            </div>
+
+            <div class="col-xs-2">
+                <label class="form-label" for="phone_number">Phonenumber</label>
+                <?php
+                if(isset($_SESSION['admin'])  || isset($_SESSION['super_user'])){
+                    echo '<input class="form-control" type="number" name="phone_number" id="phone_number"
+                       placeholder="'.$user_phone_number.'">';
+                }
+                else {
+                    echo '<a>'.$user_phone_number.'</a>';
+                }
+                ?>
+
+            </div>
+            <?php
+            if(isset($_SESSION['admin'])){
+                echo '            <div class="col-xs-2">
+                <label class="form-label" for="active">Active</label>
+                           <select class="form-control" type="number" name="active" id="active">
+      <option>0</option>
+      <option>1</option>
+    </select>
+            </div>';
+            }
+            ?>
+
+            <?php
+            if(isset($_SESSION['admin'])){
+                echo '            
+                <div class="col-xs-2">
+                    <label class="form-label" for="rights">Rights</label>
+                    <select class="form-control" name="rights" id="rights">
+                        <option>Admin</option>
+                        <option>Super User</option>
+                        <option>Basic User</option>
+                    </select>
+            </div>';
+            }
+            ?>
+
+        </div>
+        <?php
+        if(isset($_SESSION['admin'])){
+            echo '<button class="btn btn-primary btn-block mb-4" type="submit" name="update">Update</button>
+                  <button class="btn btn-primary btn-block mb-4" type="submit" id="delete" name="delete" formaction="include/delete.inc.php">Delete</button>';
+        }
+        elseif(isset($_SESSION['super_user'])){
+            echo '<button class="btn btn-primary btn-block mb-4" type="submit" name="update">Update</button>';
+        }
+        ?>
+    </form>
+
 <?php
 include_once 'footer.php';

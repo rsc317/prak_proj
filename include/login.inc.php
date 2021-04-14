@@ -27,12 +27,15 @@ function emptyInputLogin($email, $password) {
 }
 
 function loginUser($conn, $email, $password) {
-    $user_data = getDataByEmail($conn,$email);
+    $user_data = getUserData($conn,$email);
 
     if($user_data === false) {
         header("location: ../login.php?error=invalidLogin");
         exit();
     }
+
+    $rights_id = $user_data['rights'];
+    $rights = getRights($conn, $rights_id);
 
     $hashed_password = $user_data['password'];
     $check_password = password_verify($password,$hashed_password);
@@ -41,12 +44,25 @@ function loginUser($conn, $email, $password) {
         header("location: ../login.php?error=invalidLogin");
         exit();
     }
-    else if($check_password === true) {
-        session_start();
-        setSessionData($user_data);
-        header("location: ../index.php");
+    session_start();
+    setSessionData($user_data);
+    setRights($rights);
+    header("location: ../index.php");
+    exit();
+}
+
+function setRights($rights) {
+    if ($rights['admin'] == true) {
+        $_SESSION['admin'] = $rights['admin'];
+    } elseif ($rights['super_user'] == true) {
+        $_SESSION['super_user'] = $rights['super_user'];
+    }elseif ($rights['basic_user'] == true) {
+        $_SESSION['basic_user'] = $rights['basic_user'];
+    }else {
+        header("location: ../login.php?error=invalidLogin");
         exit();
     }
+
 }
 
 function setSessionData($user_data) {

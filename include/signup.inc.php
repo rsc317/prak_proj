@@ -45,7 +45,7 @@ if(isset($_POST['signup'])){
         exit();
     }
 
-    if (getDataByEmail($conn, $email) !== false) {
+    if (validateEmail($conn, $email) !== false) {
         header('location: ../signup.php?error=emailAlreadyExists');
         exit();
     }
