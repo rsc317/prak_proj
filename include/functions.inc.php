@@ -24,7 +24,7 @@ function validateEmail($conn, $email){
 
     mysqli_stmt_close($stmt);
     if($row = mysqli_fetch_assoc($result)){
-        return $row;
+        return $row['email'];
     }
     else {
         return false;
@@ -175,7 +175,7 @@ function getRights($conn, $id) {
         return false;
     }
 }
-//TODO doesnt return parameter right
+
 function getRightsId($conn, $email) {
     $sql = "SELECT rights FROM user WHERE email = ?;";
     $stmt = mysqli_stmt_init($conn);
@@ -191,7 +191,7 @@ function getRightsId($conn, $email) {
 
     mysqli_stmt_close($stmt);
     if($row = mysqli_fetch_assoc($result)){
-        return $row;
+        return $row['rights'];
     }else {
         return false;
     }
@@ -208,18 +208,63 @@ function deleteUser($conn, $email) {
     mysqli_stmt_bind_param($stmt,"s",$email);
 
     if(mysqli_stmt_execute($stmt)){
-        $sql = "DELETE FROM rights WHERE id = ?;";
-        $stmt = mysqli_stmt_init($conn);
-        $rights_id = getRightsId($conn, $email);
-        if(!mysqli_stmt_prepare($stmt,$sql)){
-            header("location: ../listpersons.php?error=stmtfailed");
-            exit();
-        }
-        mysqli_stmt_bind_param($stmt,"s",$rights_id);
-        mysqli_stmt_execute($stmt);
+        deleteRights($conn,$email);
         mysqli_stmt_close($stmt);
         return true;
     }else {
+        return false;
+    }
+}
+
+function deleteRights($conn, $email) {
+    $sql = "DELETE FROM rights WHERE id = ?;";
+    $stmt = mysqli_stmt_init($conn);
+
+    $rights_id = getRightsId($conn, $email);
+
+    if(!mysqli_stmt_prepare($stmt,$sql)){
+        header("location: ../listpersons.php?error=stmtfailed");
+        exit();
+    }
+    mysqli_stmt_bind_param($stmt,"s",$rights_id);
+
+    if(mysqli_stmt_execute($stmt)){
+        mysqli_stmt_close($stmt);
+        return true;
+    }else {
+        return false;
+    }
+}
+
+function updateRights($conn, $rights, $rights_id) {
+    $sql = "UPDATE rights SET admin = ?, super_user = ?, basic_user = ? WHERE id = ?";
+    $type = "iiis";
+
+    $stmt = mysqli_stmt_init($conn);
+
+    if(!mysqli_stmt_prepare($stmt,$sql)){
+        header("location: ../listperson.php?error=stmtfailed");
+        exit();
+    }
+    if($rights == "admin") {
+        $params = [1,0,0,$rights_id];
+    }
+    elseif ($rights == "super_user") {
+        $params = [0,1,0,$rights_id];
+    }
+    else {
+        $params = [0,0,1,$rights_id];
+    }
+
+    mysqli_stmt_bind_param($stmt,$type,...$params);
+
+    if(mysqli_stmt_execute($stmt)) {
+        mysqli_stmt_close($stmt);
+        header("location: ../listperson.php?error=none");
+        return $params;
+    }
+    else{
+        header("location: ../listperson.php?error=stmtfailed");
         return false;
     }
 }

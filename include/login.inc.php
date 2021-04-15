@@ -39,8 +39,9 @@ function loginUser($conn, $email, $password) {
 
     $hashed_password = $user_data['password'];
     $check_password = password_verify($password,$hashed_password);
+    $is_user_active = $user_data['active'];
 
-    if($check_password === false) {
+    if(!$is_user_active || $check_password === false) {
         header("location: ../login.php?error=invalidLogin");
         exit();
     }
