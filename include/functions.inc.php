@@ -197,44 +197,6 @@ function getRightsId($conn, $email) {
     }
 }
 
-function deleteUser($conn, $email) {
-    $sql = "DELETE FROM user WHERE email = ?;";
-    $stmt = mysqli_stmt_init($conn);
-
-    if(!mysqli_stmt_prepare($stmt,$sql)){
-        header("location: ../listpersons.php?error=stmtfailed");
-        exit();
-    }
-    mysqli_stmt_bind_param($stmt,"s",$email);
-
-    if(mysqli_stmt_execute($stmt)){
-        deleteRights($conn,$email);
-        mysqli_stmt_close($stmt);
-        return true;
-    }else {
-        return false;
-    }
-}
-
-function deleteRights($conn, $email) {
-    $sql = "DELETE FROM rights WHERE id = ?;";
-    $stmt = mysqli_stmt_init($conn);
-
-    $rights_id = getRightsId($conn, $email);
-
-    if(!mysqli_stmt_prepare($stmt,$sql)){
-        header("location: ../listpersons.php?error=stmtfailed");
-        exit();
-    }
-    mysqli_stmt_bind_param($stmt,"s",$rights_id);
-
-    if(mysqli_stmt_execute($stmt)){
-        mysqli_stmt_close($stmt);
-        return true;
-    }else {
-        return false;
-    }
-}
 
 function updateRights($conn, $rights, $rights_id) {
     $sql = "UPDATE rights SET admin = ?, super_user = ?, basic_user = ? WHERE id = ?";

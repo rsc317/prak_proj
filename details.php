@@ -1,5 +1,6 @@
 <?php
 include_once 'header.php';
+include_once 'sidenav.php';
 require_once 'include/details.inc.php';
 
 if (!isset($_SESSION['email'])) {
@@ -7,7 +8,7 @@ if (!isset($_SESSION['email'])) {
     exit();
 }
 ?>
-    <h2><?php echo "$user_first_name $user_given_name"; ?></h2>
+    <h2><?php echo "$user_first_name $user_given_name". " is Active: ".$user_active; ?></h2>
     <div id="error"></div>
     <form name="myDataForm" id="myDataForm" action="include/details.inc.php" method="post">
         <div class="form-group row">
@@ -134,4 +135,27 @@ if (!isset($_SESSION['email'])) {
     </form>
 
 <?php
+if (isset($_GET['error'])) {
+
+    if ($_GET['error'] == 'emptyInput') {
+        echo '<p class="text-danger">Fill in all fields!</p>';
+    } else if ($_GET['error'] == 'emailAlreadyExists') {
+        echo '<p class="text-danger">This email is already in use!</p>';
+    } else if ($_GET['error'] == 'passwordDontMatch') {
+        echo '<p class="text-danger">Passwords dont match!</p>';
+    } else if ($_GET['error'] == 'invalidPassword') {
+        echo '<p class="text-danger"Your password must contain at least one number, one uppercase letter and one lowercase letter</p>';
+    } else if ($_GET['error'] == 'invalidName') {
+        echo '<p class="text-danger">The name must contain only Letters and at least 2 characters</p>';
+    } else if ($_GET['error'] == 'invalidNumber') {
+        echo '<p class="text-danger">Numbers cant be letters/p>';
+    } else if ($_GET['error'] == 'invalidStringLen') {
+        echo '<p class="text-danger">The name must be at least two characters long</p>';
+    } else if ($_GET['error'] == 'stmtfailed') {
+        echo '<p class="text-danger">Something went wrong!</p>';
+    } else if ($_GET['error'] == 'none') {
+        echo '<p>Update successful</p>';
+    }
+}
+
 include_once 'footer.php';

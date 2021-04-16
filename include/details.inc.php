@@ -19,13 +19,17 @@ if (isset($_GET['email'])) {
         $user_city = $user_data['city'];
         $user_phone_number = $user_data['phone_number'];
         $user_rights_id = $user_data['rights'];
+        setcookie('user_rights_id', $user_rights_id, time() + 3600);
         $user_rights = getRights($conn, $user_rights_id);
+        $user_active = $user_data['active'];
     }
 }
 
 if (isset($_POST['delete'])) {
+
     if (isset($_COOKIE['user_email'])) {
         deleteUser($conn, $_COOKIE['user_email']);
+        deleteRights($conn, $_COOKIE['user_rights_id']);
         unset($_COOKIE['user_email']);
         header("location: ../listpersons.php?error=none");
         exit();
@@ -96,9 +100,14 @@ if (isset($_POST['update'])) {
     if($rights != 'none'){
         $rights_id = getRightsId($conn, $current_email);
         updateRights($conn, $rights, $rights_id);
+        header("location: ../details.php?error=none&email=$current_email");
+        exit();
     }
-    updateSelectedUser($conn, $current_email, $new_email, $password, $first_name, $given_name, $street_name, $street_number, $post_code, $city, $phone_number, $rights);
-    header("location: ../details.php?email=".$current_email);
+    if(updateSelectedUser($conn, $current_email, $new_email, $password, $first_name, $given_name, $street_name, $street_number, $post_code, $city, $phone_number, $rights)){
+        header("location: ../details.php?error=none&email=$current_email");
+        exit();
+    }
+
 }
 
 function updateSelectedUser($conn, $current_email, $new_email, $password, $first_name, $given_name, $street_name, $street_number, $post_code, $city, $phone_number, $rights)
@@ -174,9 +183,45 @@ function updateSelectedUser($conn, $current_email, $new_email, $password, $first
 
     if (mysqli_stmt_execute($stmt)) {
         mysqli_stmt_close($stmt);
-        return $params;
+        return true;
     } else {
         header("location: ../details.php?error=stmtfailed");
+        return false;
+    }
+}
+
+function deleteUser($conn, $email) {
+    $sql = "DELETE FROM user WHERE email = ?;";
+    $stmt = mysqli_stmt_init($conn);
+
+    if(!mysqli_stmt_prepare($stmt,$sql)){
+        header("location: ../listpersons.php?error=stmtfailed");
+        exit();
+    }
+    mysqli_stmt_bind_param($stmt,"s",$email);
+
+    if(mysqli_stmt_execute($stmt)){
+        mysqli_stmt_close($stmt);
+        return true;
+    }else {
+        return false;
+    }
+}
+
+function deleteRights($conn, $id) {
+    $sql = "DELETE FROM rights WHERE id = ?;";
+    $stmt = mysqli_stmt_init($conn);
+
+    if(!mysqli_stmt_prepare($stmt,$sql)){
+        header("location: ../listpersons.php?error=stmtfailed");
+        exit();
+    }
+    mysqli_stmt_bind_param($stmt,"s",$id);
+
+    if(mysqli_stmt_execute($stmt)){
+        mysqli_stmt_close($stmt);
+        return true;
+    }else {
         return false;
     }
 }

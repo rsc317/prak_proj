@@ -59,7 +59,7 @@ include_once 'header.php';
             } else if ($_GET['error'] == 'stmtfailed') {
                 echo '<p class="text-danger">Something went wrong!</p>';
             } else if ($_GET['error'] == 'none') {
-                echo '<p>You have signed up</p>';
+                echo '<p>You have signed up, please check your emails and verify your account</p>';
             }
         }
         ?>

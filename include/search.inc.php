@@ -11,11 +11,6 @@ if(isset($_POST['search'])) {
     $city = $_POST['city'];
     $phone_number = $_POST['phone_number'];
 
-    if (!(empty($email))) {
-        header('location: ../details.php?email='.$email);
-        exit();
-    }
-
     if (!(empty($first_name)) && invalidName($first_name) !== false) {
         header('location: ../mydata.php?error=invalidName');
         exit();
@@ -31,18 +26,12 @@ if(isset($_POST['search'])) {
         exit();
     }
 
-
     if (!(empty($phone_number)) && invalidNumber($phone_number) !== false) {
         header('location: ../mydata.php?error=invalidNumber');
         exit();
     }
 
-    if (!(empty($email)) && invalidEmail($email) !== false) {
-        header('location: ../mydata.php?error=invalidEmail');
-        exit();
-    }
-
-    if($valid_email = search($conn,$first_name,$given_name,$street_name,$city, $phone_number)){
+    if($valid_email = search($conn, $email, $first_name,$given_name,$street_name,$city, $phone_number)){
         header('location: ../details.php?email='.$valid_email);
     }
     else {
@@ -51,27 +40,52 @@ if(isset($_POST['search'])) {
     exit();
 }
 
-function search($conn, ...$args) {
+function search($conn, $email, $first_name, $given_name, $street_name, $city, $phone_number) {
     $sql_array = array();
     $params = [];
     $type = "";
 
-    foreach($args as $value ){
-        if("" !== trim($value)){
-            array_push($sql_array,key($value).'=?');
-            array_push($params, $value);
-            $type .= 's';
-        }
+    if("" !== trim($email)){
+        array_push($sql_array,'email=?');
+        array_push($params, $email);
+        $type .= 's';
     }
 
-    $type .= "s";
-    array_push($params, $_SESSION['email']);
+    if("" !== trim($first_name)){
+        array_push($sql_array,'first_name=?');
+        array_push($params, $first_name);
+        $type .= 's';
+    }
 
-    $sql = "SELECT email FROM user WHERE " . join(", ", $sql_array);
+    if("" !== trim($given_name)){
+        array_push($sql_array,'given_name=?');
+        array_push($params, $given_name);
+        $type .= 's';
+    }
+
+    if("" !== trim($street_name)){
+        array_push($sql_array,'street_name=?');
+        array_push($params, $street_name);
+        $type .= 's';
+    }
+
+    if("" !== trim($city)){
+        array_push($sql_array,'city=?');
+        array_push($params, $city);
+        $type .= 's';y;
+    }
+
+    if("" !== trim($phone_number)){
+        array_push($sql_array,'phone_number=?');
+        array_push($params, $phone_number);
+        $type .= 's';
+    }
+
+    $sql = "SELECT email FROM user WHERE " . join(" AND ", $sql_array);
     $stmt = mysqli_stmt_init($conn);
 
     if(!mysqli_stmt_prepare($stmt,$sql)){
-        header("location: ../search.php?error=stmtfailed");
+        header("location: ../search.php?error=stmtfailed".$sql);
         exit();
     }
 
@@ -82,10 +96,8 @@ function search($conn, ...$args) {
 
     mysqli_stmt_close($stmt);
     if($row = mysqli_fetch_assoc($result)){
-        header("location: ../search.php?error=none");
         return $row['email'];
     }
 
-    header("location: ../search.php?error=stmtfailed");
     return false;
 }
