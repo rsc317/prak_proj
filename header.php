@@ -1,25 +1,11 @@
 <?php
-    session_start();
+session_start();
+
 ?>
 <!DOCTYPE html>
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
-    <script src="assets/js/bootstrap.bundle.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>Web Anwendung</title>
-</head>
-<body>
-<header>
-    <nav>
-        <?php
-        if (isset($_SESSION["email"])) {
-            echo '  <a href="index.php">Home</a> 
-                           <a href="include/logout.inc.php">Logout</a> ';
-        } else {
-            echo '  <a href="signup.php">Signup</a> 
-                           <a href="login.php">Login</a> ';
-        }
-        ?>
-    </nav>
-</header>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">

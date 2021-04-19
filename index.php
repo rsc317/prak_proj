@@ -1,16 +1,5 @@
 <?php
-    include_once 'header.php';
-    ?>
-<div class="form-group">
-    <?php
-    if(isset($_SESSION["email"])){
-        include_once 'welcome.php';
+    if(!isset($_SESSION["email"])){
+        header("location: ../login.php");
     }
-    else {
-        include_once 'login.php';
-    }
-    ?>
-</div>
-<?php
-    include_once 'footer.php';
-    ?>
+    header("location: ../mydata.php");
