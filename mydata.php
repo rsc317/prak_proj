@@ -3,6 +3,7 @@ include_once 'sidenav.php';
 ?>
     <main>
         <div class="container">
+            <br>
             <h1 class="mb-3">My Data</h1>
             <form name="myDataForm" id="myDataForm" action="include/mydata.inc.php"
                   method="post">

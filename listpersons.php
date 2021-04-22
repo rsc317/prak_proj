@@ -5,7 +5,12 @@ require_once 'include/listpersons.inc.php';
 
     <main>
     <div class="container">
+    <br>
     <table class="table table-bordered table-hover" style="width: 1408px;">
+        <th style="text-align: center; " colspan="3">
+            <div class="th-inner ">LIST PERSONS</div>
+            <div class="fht-cell"></div>
+        </th>
         <tr>
             <th style="text-align: center">E-Mail</th>
             <th style="text-align: center">Name</th>

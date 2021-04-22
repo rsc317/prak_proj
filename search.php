@@ -3,6 +3,7 @@ include_once 'sidenav.php';
 ?>
     <main>
         <div class="container">
+            <br>
             <h1 class="mb-3">Search</h1>
             <form name="searchForm" id="searchForm" action="include/search.inc.php" method="post">
                 <div class="form-row">

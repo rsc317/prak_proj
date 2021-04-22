@@ -4,7 +4,8 @@ require_once 'include/details.inc.php';
 ?>
     <main>
         <div class="container">
-            <h2><?php echo "$user_first_name $user_given_name" . " is Active: " . $user_active; ?></h2>
+            <br>
+            <h1><?php echo "$user_first_name $user_given_name" . " is Active: " . $user_active; ?></h1>
             <form name="myDataForm" id="myDataForm" action="include/details.inc.php" method="post">
                 <div class="form-row">
                     <div class="form-group col-md-12">
