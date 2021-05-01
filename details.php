@@ -1,6 +1,13 @@
 <?php
+include_once 'header.php';
 include_once 'sidenav.php';
 require_once 'include/details.inc.php';
+
+if (!isset($_SESSION['email'])) {
+    header("location: ../login.php");
+    exit();
+}
+
 ?>
     <main>
         <div class="container">
@@ -11,7 +18,7 @@ require_once 'include/details.inc.php';
                     <div class="form-group col-md-12">
                         <label class="sr-only" for="email">E-Mail</label>
                         <?php
-                        if (isset($_SESSION['admin']) || isset($_SESSION['super_user'])) {
+                        if (3 == isset($_SESSION['rights']) || 2 == isset($_SESSION['rights'])) {
                             echo "<input class='form-control' type='email' name'email' id='email' placeholder='$user_email'>";
                         } else {
                             echo "<a>$user_email</a>";
@@ -20,7 +27,7 @@ require_once 'include/details.inc.php';
                     </div>
                 </div>
                 <?php
-                if (isset($_SESSION['admin'])) {
+                if (3 == isset($_SESSION['rights'])) {
                     echo '            <div class="form-row"><div class="form-group col-md-6"> 
                 <label class="sr-only"  for="password">Password</label>
                 <input class="form-control" type="text" name="password" id="password" placeholder="Password">
@@ -38,7 +45,7 @@ require_once 'include/details.inc.php';
                     <div class="form-group col-md-12">
                         <label class="sr-only" for="first_name">Firstname</label>
                         <?php
-                        if (isset($_SESSION['admin']) || isset($_SESSION['super_user'])) {
+                        if (3 == isset($_SESSION['rights']) || 2 == isset($_SESSION['rights'])) {
                             echo '<input class="form-control" type="text" name="first_name" id="first_name" placeholder="' . $user_first_name . '">';
                         } else {
                             echo '<a>' . $user_first_name . '</a>';
@@ -48,7 +55,7 @@ require_once 'include/details.inc.php';
                     <div class="form-group col-md-12">
                         <label class="sr-only" for="given_name">Givenname</label>
                         <?php
-                        if (isset($_SESSION['admin']) || isset($_SESSION['super_user'])) {
+                        if (3 == isset($_SESSION['rights']) || 2 == isset($_SESSION['rights'])) {
                             echo '<input class="form-control" type="text" name="given_name" id="given_name" placeholder="' . $user_given_name . '">';
                         } else {
                             echo '<a>' . $user_given_name . '</a>';
@@ -60,7 +67,7 @@ require_once 'include/details.inc.php';
                     <div class="form-group col-md-9">
                         <label class="sr-only" for="street_name">Street</label>
                         <?php
-                        if (isset($_SESSION['admin']) || isset($_SESSION['super_user'])) {
+                        if (3 == isset($_SESSION['rights']) || 2 == isset($_SESSION['rights'])) {
                             echo '<input class="form-control" type="text" name="street_name" id="street_name"
                        placeholder="' . $user_street_name . '">';
                         } else {
@@ -71,7 +78,7 @@ require_once 'include/details.inc.php';
                     <div class="form-group col-md-3">
                         <label class="sr-only" for="street_number">Number</label>
                         <?php
-                        if (isset($_SESSION['admin']) || isset($_SESSION['super_user'])) {
+                        if (3 == isset($_SESSION['rights']) || 2 == isset($_SESSION['rights'])) {
                             echo '<input class="form-control" type="text" name="street_number" id="street_number"
                        placeholder="' . $user_street_number . '">';
                         } else {
@@ -84,7 +91,7 @@ require_once 'include/details.inc.php';
                     <div class="form-group col-md-8">
                         <label class="sr-only" for="post_code">Postcode</label>
                         <?php
-                        if (isset($_SESSION['admin']) || isset($_SESSION['super_user'])) {
+                        if (3 == isset($_SESSION['rights']) || 2 == isset($_SESSION['rights'])) {
                             echo '<input class="form-control" type="number" name="post_code" id="post_code" placeholder="' . $user_post_code . '">';
                         } else {
                             echo '<a>' . $user_post_code . '</a>';
@@ -94,7 +101,7 @@ require_once 'include/details.inc.php';
                     <div class="form-group col-md-4">
                         <label class="sr-only" for="city">City</label>
                         <?php
-                        if (isset($_SESSION['admin']) || isset($_SESSION['super_user'])) {
+                        if (3 == isset($_SESSION['rights']) || 2 == isset($_SESSION['rights'])) {
                             echo '<input class="form-control" type="text" name="city" id="city" placeholder="' . $user_city . '">';
                         } else {
                             echo '<a>' . $user_city . '</a>';
@@ -106,7 +113,7 @@ require_once 'include/details.inc.php';
                     <div class="form-group col-md-9">
                         <label class="sr-only" for="phone_number">Phonenumber</label>
                         <?php
-                        if (isset($_SESSION['admin']) || isset($_SESSION['super_user'])) {
+                        if (3 == isset($_SESSION['rights']) || 2 == isset($_SESSION['rights'])) {
                             echo '<input class="form-control" type="number" name="phone_number" id="phone_number"
                        placeholder="' . $user_phone_number . '">';
                         } else {
@@ -116,16 +123,15 @@ require_once 'include/details.inc.php';
                     </div
 
                 <?php
-                if (isset($_SESSION['admin'])) {
+                if (3 == isset($_SESSION['rights'])) {
                     echo "
                 <div class='form-row'>
                     <div class='form-group col-md-3'>
                         <label class='sr-only' for='rights'>Rights</label>
                         <select class='form-control' name='rights' id='rights'>
-                            <option value='none'>None</option>
-                            <option value='admin'>Admin</option>
-                            <option value='super_user'>Super User</option>
-                            <option value='basic_user'>Basic User</option>
+                            <option value=3>Admin</option>
+                            <option value=2>Super User</option>
+                            <option value=1>Basic User</option>
                         </select>
                     </div>
                 </div>";
@@ -133,10 +139,10 @@ require_once 'include/details.inc.php';
                 ?>
                 <div class="form-row">
                 <?php
-                if (isset($_SESSION['admin']) || isset($_SESSION['super_user'])) {
+                if (3 == isset($_SESSION['rights']) || 2 == isset($_SESSION['rights'])) {
                     echo '<div class="form-group col-md-6"><button class="w-100 btn btn-primary btn-lg" type="submit" name="update">Update</button></div>';
                 }
-                if (isset($_SESSION['admin'])) {
+                if (3 == isset($_SESSION['rights'])) {
                     echo '<div class="form-group col-md-6"><button class="w-100 btn btn-primary btn-lg" type="submit" name="delete">Delete</button></div>';
                 }
                 ?>

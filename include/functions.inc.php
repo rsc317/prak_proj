@@ -1,92 +1,93 @@
 <?php
+
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
-require_once $_SERVER['DOCUMENT_ROOT'].'/lib/PHPMailer/src/Exception.php';
-require_once $_SERVER['DOCUMENT_ROOT'].'/lib/PHPMailer/src/PHPMailer.php';
-require_once $_SERVER['DOCUMENT_ROOT'].'/lib/PHPMailer/src/SMTP.php';
+require 'C:\Users\duman\PhpstormProjects\prak_proj\vendor\autoload.php';
 
 const GUSER = 'phptestm01@gmail.com';
 const GPWD = 'testphpp';
 
-function validateEmail($conn, $email){
-    $sql = "SELECT email FROM user WHERE email = ?;";
-    $stmt = mysqli_stmt_init($conn);
-
-    if(!mysqli_stmt_prepare($stmt,$sql)){
-        header("location: ../signup.php?error=stmtfailed");
-        exit();
+/**
+ * @param $conn PDO
+ * @param $email string
+ * @return false|mixed
+ */
+function validateEmail($conn, $email)
+{
+    try
+    {
+        $stmt = $conn->prepare("SELECT email FROM user WHERE email =:email;");
+        if(!$stmt->execute(['email' => $email]))
+        {
+            return false;
+        }
+        return $stmt->fetch();
     }
-
-    mysqli_stmt_bind_param($stmt, "s",$email);
-    mysqli_stmt_execute($stmt);
-
-    $result = mysqli_stmt_get_result($stmt);
-
-    mysqli_stmt_close($stmt);
-    if($row = mysqli_fetch_assoc($result)){
-        return $row['email'];
-    }
-    else {
-        return false;
+    catch(PDOException $exception)
+    {
+        throw $exception;
     }
 }
 
-//@emailIsUsed(...) checks if the email address already exists
-function getUserData($conn, $email) {
-    $sql = "SELECT * FROM user WHERE email = ?;";
-    $stmt = mysqli_stmt_init($conn);
-
-    if(!mysqli_stmt_prepare($stmt,$sql)){
-        header("location: ../signup.php?error=stmtfailed");
-        exit();
+/**
+ * @param $conn PDO
+ * @param $email string
+ * @return false|mixed
+ */
+function getUserData($conn, $email)
+{
+    try
+    {
+        $stmt = $conn->prepare("SELECT * FROM user WHERE email =:email;");
+        if(!$stmt->execute(['email' => $email]))
+        {
+            return false;
+        }
+        return $stmt->fetch();
     }
-
-    mysqli_stmt_bind_param($stmt, "s",$email);
-    mysqli_stmt_execute($stmt);
-
-    $result = mysqli_stmt_get_result($stmt);
-
-    mysqli_stmt_close($stmt);
-    if($row = mysqli_fetch_assoc($result)){
-        return $row;
-    }
-    else {
-        return false;
+    catch(PDOException $exception)
+    {
+        throw $exception;
     }
 }
 
 //@hashPassword($password) will hash the password @TODO hash with blowfish
-function hashPassword($password){
+function hashPassword($password)
+{
     return password_hash($password, PASSWORD_DEFAULT);
 }
 
 //@emptyInputSignUp checks if the input values are empty
-function emptyInput($email, $password, $repeat_password, $first_name, $given_name, $street_name, $street_number, $post_code, $city, $phone_numer) {
-    if(empty($email) || empty($password) || empty($repeat_password) || empty($first_name) || empty($given_name) || empty($street_name) || empty($street_number) || empty($post_code) || empty($city) || empty($phone_numer)) {
+function emptyInput($email, $password, $repeat_password, $first_name, $given_name, $street_name, $street_number, $post_code, $city, $phone_numer)
+{
+    if (empty($email) || empty($password) || empty($repeat_password) || empty($first_name) || empty($given_name) || empty($street_name) || empty($street_number) || empty($post_code) || empty($city) || empty($phone_numer)) {
         return true;
     }
     return false;
 }
 
 //@invalidname($name) checks if the input value contains only letters
-function invalidName($name){
-    if(!ctype_alpha($name) && invalidInputStringLen($name)) {
+function invalidName($name)
+{
+    if (!ctype_alpha($name) && invalidInputStringLen($name)) {
         return true;
     }
     return false;
 }
 
 //@invalidNumber($number) checks if the number contains only numbers
-function invalidNumber($number){
-    if(!preg_match("/^\d+$/", $number)) {
+function invalidNumber($number)
+{
+    if (!preg_match("/^\d+$/", $number)) {
         return true;
     }
     return false;
 }
 
 //@invalidEmail($email) check if the email is a email adress
-function invalidEmail($email) {
-    if (!filter_var($email, FILTER_VALIDATE_EMAIL)){
+function invalidEmail($email)
+{
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         return true;
     }
 
@@ -94,12 +95,14 @@ function invalidEmail($email) {
 }
 
 //@passwordMatches(...) checks if passwords matches
-function passwordMatch($password, $repeat_password) {
+function passwordMatch($password, $repeat_password)
+{
     return $password !== $repeat_password;
 }
 
 //@invalidPassword($password) checks if the password contains at least one uppercase, lowercase and number
-function invalidPassword($password) {
+function invalidPassword($password)
+{
     if (!preg_match('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/', $password)) {
         return true;
     }
@@ -107,7 +110,8 @@ function invalidPassword($password) {
 }
 
 //@invalidInputStringLen(...) checks if the input value is at least 2 characters long and highest 64 characters long
-function invalidInputStringLen($value) {
+function invalidInputStringLen($value)
+{
     $value_len = strlen($value);
     if ($value_len < 2 || $value_len > 63) {
         return true;
@@ -115,11 +119,13 @@ function invalidInputStringLen($value) {
     return false;
 }
 
-function createVkey($email){
-    return md5(time().$email);
+function createVkey($email)
+{
+    return md5(time() . $email);
 }
 
-function sendMail($to, $from, $from_name, $subject, $body) {
+function sendMail($to, $from, $from_name, $subject, $body)
+{
     global $error;
     $mail = new PHPMailer();
     $mail->IsSMTP();
@@ -134,8 +140,8 @@ function sendMail($to, $from, $from_name, $subject, $body) {
     $mail->Subject = $subject;
     $mail->Body = $body;
     $mail->AddAddress($to);
-    if(!$mail->Send()) {
-        $error = 'Mail error: '.$mail->ErrorInfo;
+    if (!$mail->Send()) {
+        $error = 'Mail error: ' . $mail->ErrorInfo;
         return false;
     } else {
         $error = 'Message sent!';
@@ -143,8 +149,9 @@ function sendMail($to, $from, $from_name, $subject, $body) {
     }
 }
 
-function emailVkey($email, $vkey) {
-    $message = "Hi, please klick on <a href='http://localhost/verify.php?vkey=$vkey'>Link</a> to verificate your E-Mail address :)";
+function emailVkey($email, $vkey)
+{
+    $message = "Hi, please klick on <a href='http://pp.local/verify.php?vkey=$vkey'>Link</a> to verificate your E-Mail address :)";
 
     if (sendMail($email, 'phptestm01@gmail.com', 'PhPTestProj', 'Email Verifictaion', $message)) {
         header('location:../mailsended.php');
@@ -153,80 +160,32 @@ function emailVkey($email, $vkey) {
 
 }
 
-function getRights($conn, $id) {
-    $sql = "SELECT * FROM rights WHERE id = ?;";
-    $stmt = mysqli_stmt_init($conn);
 
-    if(!mysqli_stmt_prepare($stmt,$sql)){
-        header("location: ../index.php?error=stmtfailed");
-        exit();
+function updateUser($conn, $loggedUsersEmail, &$values)
+{
+    $sql_array = [];
+    foreach ($values as $key => $value) {
+        if ("" === trim($value))
+        {
+            unset($values[$key]);
+        }
+        $sql_array[] = $key . '=:' . $key;
+        if ("password" == $key) {
+            $values['password'] = hashPassword($value);
+        }
     }
 
-    mysqli_stmt_bind_param($stmt, "s",$id);
-    mysqli_stmt_execute($stmt);
+    $values["useremail"] = $loggedUsersEmail;
 
-    $result = mysqli_stmt_get_result($stmt);
+    $sql = "UPDATE user SET " . join(", ", $sql_array) . " WHERE email=:useremail;";
 
-    mysqli_stmt_close($stmt);
-    if($row = mysqli_fetch_assoc($result)){
-        return $row;
+    try
+    {
+        $stmt = $conn->prepare($sql);
+        return $stmt->execute($values);
     }
-    else {
-        return false;
-    }
-}
-
-function getRightsId($conn, $email) {
-    $sql = "SELECT rights FROM user WHERE email = ?;";
-    $stmt = mysqli_stmt_init($conn);
-
-    if(!mysqli_stmt_prepare($stmt,$sql)){
-        header("location: ../listpersons.php?error=stmtfailed");
-        exit();
-    }
-    mysqli_stmt_bind_param($stmt,"s",$email);
-    mysqli_stmt_execute($stmt);
-
-    $result = mysqli_stmt_get_result($stmt);
-
-    mysqli_stmt_close($stmt);
-    if($row = mysqli_fetch_assoc($result)){
-        return $row['rights'];
-    }else {
-        return false;
-    }
-}
-
-
-function updateRights($conn, $rights, $rights_id) {
-    $sql = "UPDATE rights SET admin = ?, super_user = ?, basic_user = ? WHERE id = ?";
-    $type = "iiis";
-
-    $stmt = mysqli_stmt_init($conn);
-
-    if(!mysqli_stmt_prepare($stmt,$sql)){
-        header("location: ../listperson.php?error=stmtfailed");
-        exit();
-    }
-    if($rights == "admin") {
-        $params = [1,0,0,$rights_id];
-    }
-    elseif ($rights == "super_user") {
-        $params = [0,1,0,$rights_id];
-    }
-    else {
-        $params = [0,0,1,$rights_id];
-    }
-
-    mysqli_stmt_bind_param($stmt,$type,...$params);
-
-    if(mysqli_stmt_execute($stmt)) {
-        mysqli_stmt_close($stmt);
-        header("location: ../listperson.php?error=none");
-        return $params;
-    }
-    else{
-        header("location: ../listperson.php?error=stmtfailed");
-        return false;
+    catch(PDOException $exception)
+    {
+        throw $exception;
     }
 }

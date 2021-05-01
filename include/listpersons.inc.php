@@ -1,8 +1,8 @@
 <?php
-require_once 'dbc.inc.php';
+require_once 'connect.php';
 
 $page = isset($_GET['page']) && is_numeric($_GET['page']) ? $_GET['page'] : 1;
-$rop = 5;
+$rop = 3;
 $c_page = ($page - 1) * $rop;
 
 $result = getLimitedUsers($conn, $c_page, $rop);
@@ -10,29 +10,29 @@ $total_pages = getTotalNumberOfUsers($conn);
 
 function getTotalNumberOfUsers($conn) {
     $sql = "SELECT COUNT(*) FROM `user`";
-    $stmt = mysqli_stmt_init($conn);
 
-    if(!mysqli_stmt_prepare($stmt,$sql)){
-        header("location: ../signup.php?error=stmtfailed");
-        exit();
+    try
+    {
+        $stmt = $conn->query($sql);
+        return $stmt->fetchColumn();
     }
-
-    mysqli_stmt_execute($stmt);
-    $result = mysqli_stmt_get_result($stmt)->fetch_row();
-
-    return $result[0];
+    catch(PDOException $exception)
+    {
+        throw $exception;
+    }
 }
 
 function getLimitedUsers($conn, $c_page, $rop) {
     $sql = "SELECT `email`, `first_name` FROM `user` ORDER BY `email` LIMIT {$c_page},{$rop}";
-    $stmt = mysqli_stmt_init($conn);
 
-    if(!mysqli_stmt_prepare($stmt,$sql)){
-        header("location: ../signup.php?error=stmtfailed");
-        exit();
+    try
+    {
+        $stmt = $conn->prepare($sql);
+        $stmt->execute();
+        return $stmt->fetchAll();
     }
-
-    mysqli_stmt_execute($stmt);
-
-    return mysqli_stmt_get_result($stmt);
+    catch(PDOException $exception)
+    {
+        throw $exception;
+    }
 }

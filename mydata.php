@@ -1,5 +1,12 @@
 <?php
+include_once 'header.php';
 include_once 'sidenav.php';
+require_once 'include/mydata.inc.php';
+
+if (!isset($_SESSION['email'])) {
+    header("location: ../login.php");
+    exit();
+}
 ?>
     <main>
         <div class="container">

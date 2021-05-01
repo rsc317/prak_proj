@@ -1,5 +1,5 @@
 <?php
-require_once 'dbc.inc.php';
+require_once 'connect.php';
 require_once 'functions.inc.php';
 
 if(isset($_POST['search'])) {
@@ -72,7 +72,7 @@ function search($conn, $email, $first_name, $given_name, $street_name, $city, $p
     if("" !== trim($city)){
         array_push($sql_array,'city=?');
         array_push($params, $city);
-        $type .= 's';y;
+        $type .= 's';
     }
 
     if("" !== trim($phone_number)){

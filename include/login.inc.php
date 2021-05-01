@@ -1,5 +1,5 @@
 <?php
-require_once 'dbc.inc.php';
+require_once 'connect.php';
 require_once 'functions.inc.php';
 
 if(isset($_POST['login'])) {
@@ -34,9 +34,6 @@ function loginUser($conn, $email, $password) {
         exit();
     }
 
-    $rights_id = $user_data['rights'];
-    $rights = getRights($conn, $rights_id);
-
     $hashed_password = $user_data['password'];
     $check_password = password_verify($password,$hashed_password);
     $is_user_active = $user_data['active'];
@@ -45,25 +42,9 @@ function loginUser($conn, $email, $password) {
         header("location: ../login.php?error=invalidLogin");
         exit();
     }
-    session_start();
     setSessionData($user_data);
-    setRights($rights);
     header("location: ../index.php");
     exit();
-}
-
-function setRights($rights) {
-    if ($rights['admin'] == true) {
-        $_SESSION['admin'] = $rights['admin'];
-    } elseif ($rights['super_user'] == true) {
-        $_SESSION['super_user'] = $rights['super_user'];
-    }elseif ($rights['basic_user'] == true) {
-        $_SESSION['basic_user'] = $rights['basic_user'];
-    }else {
-        header("location: ../login.php?error=invalidLogin");
-        exit();
-    }
-
 }
 
 function setSessionData($user_data) {
@@ -76,4 +57,5 @@ function setSessionData($user_data) {
     $_SESSION['city'] = $user_data['city'];
     $_SESSION['phone_number'] = $user_data['phone_number'];
     $_SESSION['password'] = $user_data['password'];
+    $_SESSION['rights'] = $user_data['rights'];
 }

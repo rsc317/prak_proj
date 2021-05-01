@@ -42,7 +42,6 @@ include_once 'sidenav.php';
             </form>
             <?php
             if (isset($_GET['error'])) {
-
                 if ($_GET['error'] == 'invalidName') {
                     echo '<p class="text-danger">The name must contain only Letters and at least 2 characters</p>';
                 } else if ($_GET['error'] == 'invalidNumber') {

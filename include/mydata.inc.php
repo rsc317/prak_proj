@@ -1,9 +1,8 @@
 <?php
-require_once 'dbc.inc.php';
+require_once 'connect.php';
 require_once 'functions.inc.php';
 
 if(isset($_POST['update'])){
-
     $email = $_POST['email'];
     $password = $_POST['password'];
     $repeat_password = $_POST['repeat_password'];
@@ -60,98 +59,16 @@ if(isset($_POST['update'])){
         exit();
     }
 
-    updateUser($conn, $email, $password, $first_name, $given_name, $street_name, $street_number, $post_code, $city, $phone_number);
-}
+    $values = ['first_name' => $first_name,'given_name' => $given_name, 'street_name' => $street_name,'street_number' => $street_number, 'post_code' => $post_code,'city' => $city, 'phone_number' => $phone_number,'password' => $password];
 
-function updateUser($conn, $email, $password, $first_name, $given_name, $street_name, $street_number, $post_code, $city, $phone_number) {
-    $sql_array = array();
-    $params = [];
-    $type = "";
-    session_start();
-    if("" !== trim($email)){
-        array_push($sql_array,'email=?');
-        array_push($params, $email);
-        $type .= 's';
-    }
-    if("" !== trim($first_name)){
-        array_push($sql_array,'first_name=?');
-        array_push($params, $first_name);
-        $type .= 's';
-        $_SESSION['first_name'] = $first_name;
-    }
-    if("" !== trim($given_name)){
-        array_push($sql_array,'given_name=?');
-        array_push($params, $given_name);
-        $type .= 's';
-        $_SESSION['given_name'] = $given_name;
-    }
-    if("" !== trim($street_name)){
-        array_push($sql_array,'street_name=?');
-        array_push($params, $street_name);
-        $type .= 's';
-        $_SESSION['street_name'] = $street_name;
-    }
-    if("" !== trim($street_number)){
-        array_push($sql_array,'street_number=?');
-        array_push($params, $street_number);
-        $type .= 'i';
-        $_SESSION['street_number'] = $street_number;
-    }
-    if("" !== trim($post_code)){
-        array_push($sql_array,'post_code=?');
-        array_push($params, $post_code);
-        $type .= 'i';
-        $_SESSION['post_code'] = $post_code;
-    }
-    if("" !== trim($city)){
-        array_push($sql_array,'city=?');
-        array_push($params, $city);
-        $type .= 's';
-        $_SESSION['city'] = $city;
-    }
-    if("" !== trim($phone_number)){
-        array_push($sql_array,'phone_number=?');
-        array_push($params, $phone_number);
-        $type .= 's';
-        $_SESSION['phone_number'] = $phone_number;
-    }
-    if("" !== trim($password)){
-        array_push($sql_array,'password=?');
-        array_push($params, $password);
-        $type .= 's';
-        $_SESSION['password'] = $password;
-    }
-
-    if(!(count($params)>0)){
-        header("location: ../mydata.php?error=noinput");
-        exit();
-    }
-
-    $type .= "s";
-    array_push($params, $_SESSION['email']);
-
-    $sql = "UPDATE user SET " . join(", ", $sql_array) . " WHERE email=?;";
-
-    $stmt = mysqli_stmt_init($conn);
-
-    if(!mysqli_stmt_prepare($stmt,$sql)){
-        header("location: ../mydata.php?error=stmtfailed");
-        exit();
-    }
-
-    mysqli_stmt_bind_param($stmt,$type,...$params);
-
-    if(mysqli_stmt_execute($stmt)) {
+    try{
+        updateUser($conn, $_SESSION['email'], $values);
         header("location: ../mydata.php?error=none");
+        exit();
     }
-    else {
-        header("location: ../mydata.php?error=stmtfailed");
+    catch(Exception $exception)
+    {
+        echo 'Exception caught: ', $exception->getMessage(), "\n";
+        exit();
     }
-    mysqli_stmt_close($stmt);
-    exit();
-}
-
-function verifyPassword($password){
-    $hashed_password = $password;
-    return password_verify($password,$hashed_password);
 }

@@ -1,11 +1,3 @@
-<?php
-include_once 'header.php';
-if (!isset($_SESSION['email'])) {
-    header("location: ../login.php");
-    exit();
-}
-?>
-
 <link href="assets/css/sidebars.css" rel="stylesheet">
 </head>
 

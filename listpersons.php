@@ -1,6 +1,12 @@
 <?php
+include_once 'header.php';
 include_once 'sidenav.php';
 require_once 'include/listpersons.inc.php';
+
+if (!isset($_SESSION['email'])) {
+    header("location: ../login.php");
+    exit();
+}
 ?>
 
     <main>
@@ -15,12 +21,12 @@ require_once 'include/listpersons.inc.php';
             <th style="text-align: center">E-Mail</th>
             <th style="text-align: center">Name</th>
         </tr>
-        <?php while ($row = $result->fetch_assoc()): ?>
+        <?php foreach ($result as $row): ?>
             <tr>
                 <td><a href=details.php?email=<?php echo $row['email']; ?>><?php echo $row['email']; ?></a></td>
                 <td><?php echo $row['first_name']; ?></td>
             </tr>
-        <?php endwhile; ?>
+        <?php endforeach; ?>
     </table>
 <?php if (ceil($total_pages / $rop) > 0): ?>
     <div class="fixed-table-pagination" style="">

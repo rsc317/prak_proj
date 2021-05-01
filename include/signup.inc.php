@@ -1,6 +1,6 @@
 <?php
 require_once 'functions.inc.php';
-require_once 'dbc.inc.php';
+require_once 'connect.php';
 
 if(isset($_POST['signup'])){
 
@@ -13,9 +13,9 @@ if(isset($_POST['signup'])){
     $street_number = $_POST['street_number'];
     $post_code = $_POST['post_code'];
     $city = $_POST['city'];
-    $phone_numer = $_POST['phone_number'];
+    $phone_number = $_POST['phone_number'];
 
-    if (emptyInput($email, $password, $repeat_password, $first_name, $given_name, $street_name, $street_number, $post_code, $city, $phone_numer) !== false) {
+    if (emptyInput($email, $password, $repeat_password, $first_name, $given_name, $street_name, $street_number, $post_code, $city, $phone_number) !== false) {
         header('location: ../signup.php?error=emptyInput');
         exit();
     }
@@ -60,57 +60,38 @@ if(isset($_POST['signup'])){
         exit();
     }
 
-    insertUser($conn, $email, $password, $first_name, $given_name, $street_name, $street_number, $post_code, $city, $phone_numer);
+    $hashed_password = hashPassword($password);
+    $values = ['email' => $email, 'first_name' => $first_name,'given_name' => $given_name, 'street_name' => $street_name,'street_number' => $street_number, 'post_code' => $post_code,'city' => $city, 'phone_number' => $phone_number, 'password' => $hashed_password];
+
+    try{
+        insertUser($conn, $values);
+        header("location: ../mydata.php?error=none");
+        exit();
+    }
+    catch(Exception $exception)
+    {
+        echo 'Exception caught: ', $exception->getMessage(), "\n";
+        exit();
+    }
 }
 
 //@insertUser(...) inserts a user into the database
-function insertUser($conn,$email, $password, $first_name, $given_name, $street_name, $street_number, $post_code, $city, $phone_numer) {
-    $id = createUniqueID();
-    $rights_id = insertRights($conn);
-    $active = 0;
-    $vkey = createVkey($email);
-    $hash_password = hashPassword($password);
-    $sql = "INSERT INTO user(id, email, first_name, given_name, street_name, street_number, post_code, city, phone_number, password, rights, active, vkey) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?);";
-    $stmt = mysqli_stmt_init($conn);
+function insertUser($conn, &$values) {
+    $values['active'] = 0;
+    $values['vkey'] = createVkey($values['email']);
+    $values['rights'] = 0;
 
-    if(!mysqli_stmt_prepare($stmt,$sql)){
-        header("location: ../signup.php?error=stmtfailed");
-        exit();
+    $sql = "INSERT INTO user( email, first_name, given_name, street_name, street_number, post_code, city, phone_number, password, active, vkey, rights) 
+            VALUES (:email, :first_name, :given_name, :street_name, :street_number, :post_code, :city, :phone_number, :password, :active, :vkey, :rights);";
+    try
+    {
+        $stmt = $conn->prepare($sql);
+        emailVkey($values['email'],$values['vkey']);
+        return $stmt->execute($values);
     }
-
-    mysqli_stmt_bind_param($stmt, "sssssiissssis",$id,$email, $first_name, $given_name, $street_name, $street_number, $post_code, $city, $phone_numer, $hash_password, $rights_id, $active, $vkey);
-    if(mysqli_stmt_execute($stmt)) {
-        emailVkey($email,$vkey);
-        header("location: ../signup.php?error=none");
-        exit();
+    catch(PDOException $exception)
+    {
+        throw $exception;
     }
-    mysqli_stmt_close($stmt);
 }
 
-//@insertRights($conn) inserts rights into the databse
-function insertRights($conn) {
-    $admin = 0;
-    $su = 0;
-    $bu = 1;
-    $id = createUniqueID();
-
-    $sql = "INSERT INTO rights(id, admin, super_user, basic_user) VALUES(?,?,?,?);";
-    $stmt = mysqli_stmt_init($conn);
-
-    if(!mysqli_stmt_prepare($stmt,$sql)){
-        header("location: ../signup.php?error=stmtfailed");
-        exit();
-    }
-
-    mysqli_stmt_bind_param($stmt, "siii",$id,$admin,$su,$bu);
-    mysqli_stmt_execute($stmt);
-    mysqli_stmt_close($stmt);
-    return $id;
-}
-
-//@createUniqueID creates an unique id and returns the id as a string @TODO research for better method
-function createUniqueID(){
-    //return md5(time());
-    $bytes = random_bytes(16);
-    return bin2hex($bytes);
-}
