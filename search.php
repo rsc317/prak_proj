@@ -1,5 +1,6 @@
 <?php
 include_once 'sidenav.php';
+require_once 'include\search.inc.php';
 ?>
     <main>
         <div class="container">
@@ -40,21 +41,19 @@ include_once 'sidenav.php';
                 </div>
                 <button class="w-100 btn btn-primary btn-lg" type="submit" name="search">Search</button>
             </form>
-            <?php
-            if (isset($_GET['error'])) {
-                if ($_GET['error'] == 'invalidName') {
-                    echo '<p class="text-danger">The name must contain only Letters and at least 2 characters</p>';
-                } else if ($_GET['error'] == 'invalidNumber') {
-                    echo '<p class="text-danger">Numbers cant be letters/p>';
-                } else if ($_GET['error'] == 'stmtfailed') {
-                    echo '<p class="text-danger">Something went wrong!</p>';
-                } else if ($_GET['error'] == 'noResult') {
-                    echo '<p class="text-danger">No match found</p>';
-                }
-            }
-            ?>
         </div>
     </main>
 <?php
 
+if (isset($_GET['error'])) {
+    if ($_GET['error'] == 'invalidName') {
+        echo '<p class="text-danger">The name must contain only Letters and at least 2 characters</p>';
+    } else if ($_GET['error'] == 'invalidNumber') {
+        echo '<p class="text-danger">Numbers cant be letters/p>';
+    } else if ($_GET['error'] == 'stmtfailed') {
+        echo '<p class="text-danger">Something went wrong!</p>';
+    } else if ($_GET['error'] == 'noResult') {
+        echo '<p class="text-danger">No match found</p>';
+    }
+}
 include_once 'footer.php';

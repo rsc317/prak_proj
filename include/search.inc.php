@@ -2,6 +2,11 @@
 require_once 'connect.php';
 require_once 'functions.inc.php';
 
+if (!isset($_SESSION['loggedUser'])) {
+    header("location: ../login.php");
+    exit();
+}
+
 if(isset($_POST['search'])) {
 
     $email = $_POST['email'];

@@ -3,31 +3,26 @@ include_once 'header.php';
 include_once 'sidenav.php';
 require_once 'include/details.inc.php';
 
-if (!isset($_SESSION['email'])) {
-    header("location: ../login.php");
-    exit();
-}
-
 ?>
     <main>
         <div class="container">
             <br>
-            <h1><?php echo "$user_first_name $user_given_name" . " is Active: " . $user_active; ?></h1>
+            <h1><?php echo $user->getFirstName()." ". $user->getGivenName() . " is Active: " . $user->isActive(); ?></h1>
             <form name="myDataForm" id="myDataForm" action="include/details.inc.php" method="post">
                 <div class="form-row">
                     <div class="form-group col-md-12">
                         <label class="sr-only" for="email">E-Mail</label>
                         <?php
-                        if (3 == isset($_SESSION['rights']) || 2 == isset($_SESSION['rights'])) {
-                            echo "<input class='form-control' type='email' name'email' id='email' placeholder='$user_email'>";
+                        if (3 == $loggedUser->getRights()|| 2 == $loggedUser->getRights()) {
+                            echo "<input class='form-control' type='email' name'email' id='email' placeholder='$user->getEmail()'>";
                         } else {
-                            echo "<a>$user_email</a>";
+                            echo "<a>$user->getEmail()</a>";
                         }
                         ?>
                     </div>
                 </div>
                 <?php
-                if (3 == isset($_SESSION['rights'])) {
+                if (3 == $loggedUser->getRights()) {
                     echo '            <div class="form-row"><div class="form-group col-md-6"> 
                 <label class="sr-only"  for="password">Password</label>
                 <input class="form-control" type="text" name="password" id="password" placeholder="Password">
@@ -45,20 +40,20 @@ if (!isset($_SESSION['email'])) {
                     <div class="form-group col-md-12">
                         <label class="sr-only" for="first_name">Firstname</label>
                         <?php
-                        if (3 == isset($_SESSION['rights']) || 2 == isset($_SESSION['rights'])) {
-                            echo '<input class="form-control" type="text" name="first_name" id="first_name" placeholder="' . $user_first_name . '">';
+                        if (3 == $loggedUser->getRights() || 2 == $loggedUser->getRights()) {
+                            echo '<input class="form-control" type="text" name="first_name" id="first_name" placeholder="' . $user->getFirstName() . '">';
                         } else {
-                            echo '<a>' . $user_first_name . '</a>';
+                            echo '<a>' . $user->getFirstName() . '</a>';
                         }
                         ?>
                     </div>
                     <div class="form-group col-md-12">
                         <label class="sr-only" for="given_name">Givenname</label>
                         <?php
-                        if (3 == isset($_SESSION['rights']) || 2 == isset($_SESSION['rights'])) {
-                            echo '<input class="form-control" type="text" name="given_name" id="given_name" placeholder="' . $user_given_name . '">';
+                        if (3 == $loggedUser->getRights() || 2 == $loggedUser->getRights()) {
+                            echo '<input class="form-control" type="text" name="given_name" id="given_name" placeholder="' . $user->getGivenName() . '">';
                         } else {
-                            echo '<a>' . $user_given_name . '</a>';
+                            echo '<a>' . $user->getGivenName() . '</a>';
                         }
                         ?>
                     </div>
@@ -67,22 +62,22 @@ if (!isset($_SESSION['email'])) {
                     <div class="form-group col-md-9">
                         <label class="sr-only" for="street_name">Street</label>
                         <?php
-                        if (3 == isset($_SESSION['rights']) || 2 == isset($_SESSION['rights'])) {
+                        if (3 == $loggedUser->getRights() || 2 == $loggedUser->getRights()) {
                             echo '<input class="form-control" type="text" name="street_name" id="street_name"
-                       placeholder="' . $user_street_name . '">';
+                       placeholder="' . $user->getStreetName() . '">';
                         } else {
-                            echo '<a>' . $user_street_name . '</a>';
+                            echo '<a>' . $user->getStreetName() . '</a>';
                         }
                         ?>
                     </div>
                     <div class="form-group col-md-3">
                         <label class="sr-only" for="street_number">Number</label>
                         <?php
-                        if (3 == isset($_SESSION['rights']) || 2 == isset($_SESSION['rights'])) {
+                        if (3 == $loggedUser->getRights() || 2 == $loggedUser->getRights()) {
                             echo '<input class="form-control" type="text" name="street_number" id="street_number"
-                       placeholder="' . $user_street_number . '">';
+                       placeholder="' . $user->getStreetNumber() . '">';
                         } else {
-                            echo '<a>' . $user_street_number . '</a>';
+                            echo '<a>' . $user->getStreetNumber() . '</a>';
                         }
                         ?>
                     </div>
@@ -91,20 +86,20 @@ if (!isset($_SESSION['email'])) {
                     <div class="form-group col-md-8">
                         <label class="sr-only" for="post_code">Postcode</label>
                         <?php
-                        if (3 == isset($_SESSION['rights']) || 2 == isset($_SESSION['rights'])) {
-                            echo '<input class="form-control" type="number" name="post_code" id="post_code" placeholder="' . $user_post_code . '">';
+                        if (3 == $loggedUser->getRights() || 2 == $loggedUser->getRights()) {
+                            echo '<input class="form-control" type="text" name="post_code" id="post_code" placeholder="' . $user->getPostCode() . '">';
                         } else {
-                            echo '<a>' . $user_post_code . '</a>';
+                            echo '<a>' . $user->getPostCode() . '</a>';
                         }
                         ?>
                     </div>
                     <div class="form-group col-md-4">
                         <label class="sr-only" for="city">City</label>
                         <?php
-                        if (3 == isset($_SESSION['rights']) || 2 == isset($_SESSION['rights'])) {
-                            echo '<input class="form-control" type="text" name="city" id="city" placeholder="' . $user_city . '">';
+                        if (3 == $loggedUser->getRights() || 2 == $loggedUser->getRights()) {
+                            echo '<input class="form-control" type="text" name="city" id="city" placeholder="' . $user->getCity() . '">';
                         } else {
-                            echo '<a>' . $user_city . '</a>';
+                            echo '<a>' . $user->getCity() . '</a>';
                         }
                         ?>
                     </div>
@@ -113,17 +108,17 @@ if (!isset($_SESSION['email'])) {
                     <div class="form-group col-md-9">
                         <label class="sr-only" for="phone_number">Phonenumber</label>
                         <?php
-                        if (3 == isset($_SESSION['rights']) || 2 == isset($_SESSION['rights'])) {
+                        if (3 == $loggedUser->getRights() || 2 == $loggedUser->getRights()) {
                             echo '<input class="form-control" type="number" name="phone_number" id="phone_number"
-                       placeholder="' . $user_phone_number . '">';
+                       placeholder="' . $user->getPhoneNumber() . '">';
                         } else {
-                            echo '<a>' . $user_phone_number . '</a>';
+                            echo '<a>' . $user->getPhoneNumber() . '</a>';
                         }
                         ?>
                     </div
 
                 <?php
-                if (3 == isset($_SESSION['rights'])) {
+                if (3 == $loggedUser->getRights()) {
                     echo "
                 <div class='form-row'>
                     <div class='form-group col-md-3'>
@@ -139,10 +134,10 @@ if (!isset($_SESSION['email'])) {
                 ?>
                 <div class="form-row">
                 <?php
-                if (3 == isset($_SESSION['rights']) || 2 == isset($_SESSION['rights'])) {
+                if (3 == $loggedUser->getRights() || 2 == $loggedUser->getRights()) {
                     echo '<div class="form-group col-md-6"><button class="w-100 btn btn-primary btn-lg" type="submit" name="update">Update</button></div>';
                 }
-                if (3 == isset($_SESSION['rights'])) {
+                if (3 == $loggedUser->getRights()) {
                     echo '<div class="form-group col-md-6"><button class="w-100 btn btn-primary btn-lg" type="submit" name="delete">Delete</button></div>';
                 }
                 ?>

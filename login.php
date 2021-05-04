@@ -1,5 +1,11 @@
 <?php
 include_once 'header.php';
+session_start();
+if (isset($_SESSION['loggedUser'])) {
+    header("location: ../mydata.php");
+    exit();
+}
+
 ?>
     <link href="assets/css/signin.css" rel="stylesheet">
     </head>

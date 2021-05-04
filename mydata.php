@@ -2,11 +2,6 @@
 include_once 'header.php';
 include_once 'sidenav.php';
 require_once 'include/mydata.inc.php';
-
-if (!isset($_SESSION['email'])) {
-    header("location: ../login.php");
-    exit();
-}
 ?>
     <main>
         <div class="container">
@@ -19,7 +14,7 @@ if (!isset($_SESSION['email'])) {
                     <div class="form-group col-md-12">
                         <label class="sr-only" for="email">E-Mail</label>
                         <input class="form-control" type="email" name="email" id="email"
-                               placeholder="Email address">
+                               placeholder="<?php echo $email ?>">
                     </div>
                     <div class="form-group col-md-6">
                         <label class="sr-only" for="password">Password</label>
@@ -28,80 +23,82 @@ if (!isset($_SESSION['email'])) {
                     </div>
                     <div class="form-group col-md-6">
                         <label class="sr-only" for="repeat_password">Repeat Password</label>
-                        <input class="form-control" type="text" name="repeat_password" id="repeat_password"
-                               placeholder="Password">
+                        <input class="form-control" type="text" name="repeatPassword" id="repeat_password"
+                               placeholder="Repeat Password">
                     </div>
                 </div>
                 <div class="form-row">
                     <div class="form-group col-md-12">
                         <label class="sr-only" for="first_name">Firstname</label>
-                        <input class="form-control" type="text" name="first_name" id="first_name"
-                               placeholder="<?php echo $_SESSION['first_name']; ?>">
+                        <input class="form-control" type="text" name="firstName" id="first_name"
+                               placeholder="<?php echo $firstName; ?>">
                     </div>
                     <div class="form-group col-md-12">
                         <label class="sr-only" for="given_name">Givenname</label>
-                        <input class="form-control" type="text" name="given_name" id="given_name"
-                               placeholder="<?php echo $_SESSION['given_name']; ?>">
+                        <input class="form-control" type="text" name="givenName" id="given_name"
+                               placeholder="<?php echo $givenName; ?>">
                     </div>
                 </div>
                 <div class="form-row">
                     <div class="form-group col-md-12">
                         <label class="sr-only" for="phone_number">Phonenumber</label>
-                        <input class="form-control" type="text" name="phone_number" id="phone_number"
-                               placeholder="<?php echo $_SESSION['phone_number']; ?>">
+                        <input class="form-control" type="text" name="phoneNumber" id="phone_number"
+                               placeholder="<?php echo $phoneNumber; ?>">
                     </div>
                 </div>
                 <div class="form-row">
                     <div class="form-group col-md-10">
                         <label class="sr-only" for="street_name">Street</label>
-                        <input class="form-control" type="text" name="street_name" id="street_name"
-                               placeholder="<?php echo $_SESSION['street_name']; ?>">
+                        <input class="form-control" type="text" name="streetName" id="street_name"
+                               placeholder="<?php echo $streetName; ?>">
                     </div>
                     <div class="form-group col-md-2">
                         <div class="form-group">
                             <label class="sr-only" for="street_number">Number</label>
-                            <input class="form-control" type="number" name="street_number" id="street_number"
-                                   placeholder="<?php echo $_SESSION['street_number']; ?>">
+                            <input class="form-control" type="text" name="streetNumber" id="street_number"
+                                   placeholder="<?php echo $streetNumber; ?>">
                         </div>
                     </div>
                 </div>
                 <div class="form-row">
                     <div class="form-group col-md-4">
                         <label class="sr-only" for="post_code">Postcode</label>
-                        <input class="form-control" type="number" name="post_code" id="post_code"
-                               placeholder="<?php echo $_SESSION['post_code']; ?>">
+                        <input class="form-control" type="text" name="postCode" id="post_code"
+                               placeholder="<?php echo $postCode; ?>">
                     </div>
                     <div class="form-group col-md-8">
                         <label class="sr-only" for="city">City</label>
                         <input class="form-control" type="text" name="city" id="city"
-                               placeholder="<?php echo $_SESSION['city']; ?>">
+                               placeholder="<?php echo $city; ?>">
                     </div>
                 </div>
+                    <?php
+                    $errorMsg = "";
+                    if ($errorMsg)
+                    {
+                        $alertType = 'alert alert-warning';
+                        if('User update succeed' == $errorMsg){
+                            $alertType = 'alert alert-success';
+                        }
+                        echo"<div class='$alertType' role='alert'>$errorMsg</div>";
+                    }
+                    ?>
                 <button class="w-100 btn btn-primary btn-lg" type="submit" name="update">Update</button>
             </form>
-            <?php
-            if (isset($_GET['error'])) {
-
-                if ($_GET['error'] == 'emailAlreadyExists') {
-                    echo '<p class="text-danger">This email is already in use!</p>';
-                } else if ($_GET['error'] == 'passwordDontMatch') {
-                    echo '<p class="text-danger">Passwords dont match!</p>';
-                } else if ($_GET['error'] == 'invalidPassword') {
-                    echo '<p class="text-danger">Your password must contain at least one number, one uppercase letter and one lowercase letter</p>';
-                } else if ($_GET['error'] == 'invalidName') {
-                    echo '<p class="text-danger">The name must contain only Letters</p>';
-                } else if ($_GET['error'] == 'invalidNumber') {
-                    echo '<p class="text-danger">Numbers cant be letters/p>';
-                } else if ($_GET['error'] == 'invalidStringLen') {
-                    echo '<p class="text-danger">The name must be at least two characters long</p>';
-                } else if ($_GET['error'] == 'stmtfailed') {
-                    echo '<p class="text-danger">Something went wrong!</p>';
-                } else if ($_GET['error'] == 'none') {
-                    echo '<p>Data has changed</p>';
-                }
-            }
-            ?>
         </div>
     </main>
 <?php
+
+if (isset($_GET['error'])) {
+    $errorMsg = match ($_GET['error']) {
+        'emailAlreadyExists' => 'This email is already in use!',
+        'passwordDontMatch' => 'Passwords dont match!',
+        'invalidPassword' => 'Your password must contain at least one number, one uppercase letter and one lowercase letter',
+        'invalidName' => 'The name must contain only Letters and must be at least two characters long',
+        'invalidNumber' => 'Numbers cant be letters',
+        'stmtFailed' => 'Something went wrong!',
+        'none' => 'User update succeed',
+        default => "",
+    };
+}
 include_once 'footer.php';

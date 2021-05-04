@@ -2,39 +2,49 @@
 require_once 'connect.php';
 require_once 'functions.inc.php';
 
-if(isset($_POST['update'])){
+if (!isset($_SESSION['loggedUser'])) {
+    header("location: ../login.php");
+    exit();
+}
+
+$loggedUser = unserialize($_SESSION['loggedUser']);
+$email = $loggedUser->getEmail();
+$firstName = $loggedUser->getFirstName();
+$givenName = $loggedUser->getGivenName();
+$phoneNumber = $loggedUser->getPhoneNumber();
+$streetName = $loggedUser->getStreetName();
+$streetNumber = $loggedUser->getStreetNumber();
+$postCode = $loggedUser->getPostCode();
+$city = $loggedUser->getCity();
+
+if (isset($_POST['update'])) {
     $email = $_POST['email'];
     $password = $_POST['password'];
-    $repeat_password = $_POST['repeat_password'];
-    $first_name = $_POST['first_name'];
-    $given_name = $_POST['given_name'];
-    $street_name =  $_POST['street_name'];
-    $street_number = $_POST['street_number'];
-    $post_code = $_POST['post_code'];
+    $repeatPassword = $_POST['repeatPassword'];
+    $firstName = $_POST['firstName'];
+    $givenName = $_POST['givenName'];
+    $streetName = $_POST['streetName'];
+    $streetNumber = $_POST['streetNumber'];
+    $postCode = $_POST['postCode'];
     $city = $_POST['city'];
-    $phone_number = $_POST['phone_number'];
+    $phoneNumber = $_POST['phoneNumber'];
 
-    if (!(empty($first_name)) && invalidName($first_name) !== false) {
+    if (!(empty($firstName)) && invalidName($firstName) !== false) {
         header('location: ../mydata.php?error=invalidName');
         exit();
     }
 
-    if (!(empty($given_name)) && invalidName($given_name) !== false) {
+    if (!(empty($givenName)) && invalidName($givenName) !== false) {
         header('location: ../mydata.php?error=invalidName');
         exit();
     }
 
-    if (!(empty($street_name)) && invalidName($street_name) !== false) {
+    if (!(empty($streetName)) && invalidName($streetName) !== false) {
         header('location: ../mydata.php?error=invalidName');
         exit();
     }
 
-    if (!(empty($post_code)) && invalidNumber($post_code) !== false) {
-        header('location: ../mydata.php?error=invalidNumber');
-        exit();
-    }
-
-    if (!(empty($phone_number)) && invalidNumber($phone_number) !== false) {
+    if (!(empty($phoneNumber)) && invalidNumber($phoneNumber) !== false) {
         header('location: ../mydata.php?error=invalidNumber');
         exit();
     }
@@ -49,26 +59,26 @@ if(isset($_POST['update'])){
         exit();
     }
 
-    if (!(empty($password)) && passwordMatch($password, $repeat_password) !== false) {
+    if (!(empty($password)) && passwordMatch($password, $repeatPassword) !== false) {
         header('location: ../mydata.php?error=passwordDontMatch');
         exit();
     }
 
-    if(!(empty($password)) && invalidPassword($password) !== false) {
+    if (!(empty($password)) && invalidPassword($password) !== false) {
         header('location: ../mydata.php?error=invalidPassword');
         exit();
     }
 
-    $values = ['first_name' => $first_name,'given_name' => $given_name, 'street_name' => $street_name,'street_number' => $street_number, 'post_code' => $post_code,'city' => $city, 'phone_number' => $phone_number,'password' => $password];
+    $values = ['email' => $email, 'first_name' => $firstName, 'given_name' => $givenName, 'street_name' => $streetName, 'street_number' => $streetNumber, 'post_code' => $postCode, 'city' => $city, 'phone_number' => $phoneNumber, 'password' => $password];
 
-    try{
-        updateUser($conn, $_SESSION['email'], $values);
+    try {
+        $updatedValues = updateUserByEmail($conn, $loggedUser->getEmail(), $values);
+        $loggedUser = updateUserSession($loggedUser, $updatedValues);
+        $_SESSION['loggedUser'] = serialize($loggedUser);
         header("location: ../mydata.php?error=none");
         exit();
-    }
-    catch(Exception $exception)
-    {
-        echo 'Exception caught: ', $exception->getMessage(), "\n";
+    } catch (Exception $e) {
+        header('location: ../mydata.php?error=stmtFailed');
         exit();
     }
 }

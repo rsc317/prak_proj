@@ -1,5 +1,10 @@
 <?php
 include_once 'header.php';
+session_start();
+if (isset($_SESSION['loggedUser'])) {
+    header("location: ../mydata.php");
+    exit();
+}
 ?>
 <link href="assets/css/signin.css" rel="stylesheet">
 </head>
@@ -40,7 +45,7 @@ include_once 'header.php';
         </div>
         <div class="form-floating">
             <label class="sr-only" for="post_code">Postcode</label>
-            <input class="form-control" type="number" name="post_code" id="post_code" placeholder="Postcode" required>
+            <input class="form-control" type="text" name="post_code" id="post_code" placeholder="Postcode" required>
         </div>
         <div class="form-floating">
             <label class="sr-only" for="city">City</label>

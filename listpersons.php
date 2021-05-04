@@ -2,11 +2,6 @@
 include_once 'header.php';
 include_once 'sidenav.php';
 require_once 'include/listpersons.inc.php';
-
-if (!isset($_SESSION['email'])) {
-    header("location: ../login.php");
-    exit();
-}
 ?>
 
     <main>

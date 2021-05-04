@@ -1,11 +1,81 @@
 <?php
+require_once 'C:\Users\duman\PhpstormProjects\prak_proj\vendor\autoload.php';
+require_once 'C:\Users\duman\PhpstormProjects\prak_proj\entities\User.php';
 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
-require 'C:\Users\duman\PhpstormProjects\prak_proj\vendor\autoload.php';
 
 const GUSER = 'phptestm01@gmail.com';
 const GPWD = 'testphpp';
+
+/**
+ * @param PDO $conn
+ * @param $values
+ * @return User
+ */
+function insertUser(PDO $conn, &$values): User
+{
+    $values['active'] = 0;
+    $values['vkey'] = createVkey($values['email']);
+    $values['rights'] = 0;
+
+    $sql = "INSERT INTO user( email, first_name, given_name, street_name, street_number, post_code, city, phone_number, password, active, vkey, rights) 
+            VALUES (:email, :first_name, :given_name, :street_name, :street_number, :post_code, :city, :phone_number, :password, :active, :vkey, :rights);";
+    try {
+        $stmt = $conn->prepare($sql);
+        emailVkey($values['email'], $values['vkey']);
+        $stmt->execute($values);
+        return $stmt->fetchObject('User');
+    } catch (PDOException $exception) {
+        throw $exception;
+    }
+}
+
+/**
+ * @param $conn PDO
+ * @param $email string
+ * @return User
+ */
+function getUser(PDO $conn, string $email): User
+{
+    try {
+        $stmt = $conn->prepare("SELECT * FROM user WHERE email =:email;");
+        $stmt->execute(['email' => $email]);
+        return $stmt->fetchObject("User");
+    } catch (PDOException $exception) {
+        throw $exception;
+    }
+}
+
+/**
+ * @param PDO $conn
+ * @param string $loggedUsersEmail
+ * @param $values
+ * @return array
+ */
+function updateUserByEmail(PDO $conn, string $loggedUsersEmail, &$values): array
+{
+    $sql_array = [];
+    foreach ($values as $key => $value) {
+        if ("" !== trim($value)) {
+            $sql_array[] = $key . '=:' . $key;
+            if ("password" == $key) {
+                $values['password'] = hashPassword($value);
+            }
+        } else {
+            unset($values[$key]);
+        }
+    }
+
+    $values["useremail"] = $loggedUsersEmail;
+
+    $sql = "UPDATE user SET " . join(", ", $sql_array) . " WHERE email=:useremail;";
+
+    $stmt = $conn->prepare($sql);
+    $stmt->execute($values);
+    unset($values['useremail']);
+    return $values;
+}
 
 /**
  * @param $conn PDO
@@ -14,39 +84,13 @@ const GPWD = 'testphpp';
  */
 function validateEmail($conn, $email)
 {
-    try
-    {
+    try {
         $stmt = $conn->prepare("SELECT email FROM user WHERE email =:email;");
-        if(!$stmt->execute(['email' => $email]))
-        {
+        if (!$stmt->execute(['email' => $email])) {
             return false;
         }
         return $stmt->fetch();
-    }
-    catch(PDOException $exception)
-    {
-        throw $exception;
-    }
-}
-
-/**
- * @param $conn PDO
- * @param $email string
- * @return false|mixed
- */
-function getUserData($conn, $email)
-{
-    try
-    {
-        $stmt = $conn->prepare("SELECT * FROM user WHERE email =:email;");
-        if(!$stmt->execute(['email' => $email]))
-        {
-            return false;
-        }
-        return $stmt->fetch();
-    }
-    catch(PDOException $exception)
-    {
+    } catch (PDOException $exception) {
         throw $exception;
     }
 }
@@ -69,7 +113,7 @@ function emptyInput($email, $password, $repeat_password, $first_name, $given_nam
 //@invalidname($name) checks if the input value contains only letters
 function invalidName($name)
 {
-    if (!ctype_alpha($name) && invalidInputStringLen($name)) {
+    if (!ctype_alpha($name) || invalidInputStringLen($name)) {
         return true;
     }
     return false;
@@ -160,32 +204,44 @@ function emailVkey($email, $vkey)
 
 }
 
-
-function updateUser($conn, $loggedUsersEmail, &$values)
+/**
+ * @param User $loggedUser
+ * @param array $values
+ * @return User
+ */
+function updateUserSession(User &$loggedUser, array $values): User
 {
-    $sql_array = [];
     foreach ($values as $key => $value) {
-        if ("" === trim($value))
-        {
-            unset($values[$key]);
+        switch ($key) {
+            case 'email':
+                $loggedUser->setEmail($value);
+                break;
+            case 'first_name':
+                $loggedUser->setFirstName($value);
+                break;
+            case 'given_name':
+                $loggedUser->setGivenName($value);
+                break;
+            case 'street_name':
+                $loggedUser->setStreetName($value);
+                break;
+            case 'street_number':
+                $loggedUser->setStreetNumber($value);
+                break;
+            case 'post_code':
+                $loggedUser->setPostCode($value);
+                break;
+            case 'city':
+                $loggedUser->setCity($value);
+                break;
+            case 'phone_number':
+                $loggedUser->setPhoneNumber($value);
+                break;
+            case 'password':
+                $loggedUser->setPassword($value);
+                break;
         }
-        $sql_array[] = $key . '=:' . $key;
-        if ("password" == $key) {
-            $values['password'] = hashPassword($value);
-        }
     }
 
-    $values["useremail"] = $loggedUsersEmail;
-
-    $sql = "UPDATE user SET " . join(", ", $sql_array) . " WHERE email=:useremail;";
-
-    try
-    {
-        $stmt = $conn->prepare($sql);
-        return $stmt->execute($values);
-    }
-    catch(PDOException $exception)
-    {
-        throw $exception;
-    }
+    return $loggedUser;
 }

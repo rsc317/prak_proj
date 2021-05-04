@@ -75,23 +75,3 @@ if(isset($_POST['signup'])){
     }
 }
 
-//@insertUser(...) inserts a user into the database
-function insertUser($conn, &$values) {
-    $values['active'] = 0;
-    $values['vkey'] = createVkey($values['email']);
-    $values['rights'] = 0;
-
-    $sql = "INSERT INTO user( email, first_name, given_name, street_name, street_number, post_code, city, phone_number, password, active, vkey, rights) 
-            VALUES (:email, :first_name, :given_name, :street_name, :street_number, :post_code, :city, :phone_number, :password, :active, :vkey, :rights);";
-    try
-    {
-        $stmt = $conn->prepare($sql);
-        emailVkey($values['email'],$values['vkey']);
-        return $stmt->execute($values);
-    }
-    catch(PDOException $exception)
-    {
-        throw $exception;
-    }
-}
-
