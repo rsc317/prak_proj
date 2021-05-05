@@ -10,15 +10,7 @@ if (!isset($_SESSION['loggedUser'])) {
 
 if(isset($_POST['search'])) {
 
-    $email = $_POST['email'];
-    $firstName = $_POST['first_name'];
-    $givenName = $_POST['given_name'];
-    $streetName = $_POST['street_name'];
-    $city = $_POST['city'];
-    $phoneNumber = $_POST['phone_number'];
-
-    $values = ['email' => $email, 'first_name' => $firstName,'given_name' => $givenName, 'street_name' => $streetName,
-        'city' => $city, 'phone_number' => $phoneNumber];
+    $values = setValues($_POST);
 
     try {
         $error = invalidInputValues($conn, $values);

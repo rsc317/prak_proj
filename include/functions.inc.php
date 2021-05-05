@@ -414,3 +414,24 @@ function invalidInputValues(PDO $conn, array $values): bool|string
     }
     return false;
 }
+
+/**
+ * @param array $values
+ * @return array
+ */
+function setValues(array $values): array
+{
+    $email =$values['email'];
+    $password =$values['password'];
+    $repeatPassword =$values['repeat_password'];
+    $firstName =$values['first_name'];
+    $givenName =$values['given_name'];
+    $streetName = $values['street_name'];
+    $streetNumber =$values['street_number'];
+    $postCode =$values['post_code'];
+    $city =$values['city'];
+    $phoneNumber =$values['phone_number'];
+
+    return ['email' => $email, 'first_name' => $firstName,'given_name' => $givenName, 'street_name' => $streetName,
+        'street_number' => $streetNumber, 'post_code' => $postCode,'city' => $city, 'phone_number' => $phoneNumber, 'password' => $password, 'repeat_password' => $repeatPassword];
+}

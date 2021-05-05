@@ -31,21 +31,7 @@ if (isset($_GET['email'])) {
 
 if (isset($_POST['update'])) {
     $currentUserEmail = $_COOKIE['user_email'];
-    $formInputValues = $_POST;
-    $email = $_POST['email'];
-    $password = $_POST['password'];
-    $repeatPassword = $_POST['repeat_password'];
-    $firstName = $_POST['first_name'];
-    $givenName = $_POST['given_name'];
-    $streetName =  $_POST['street_name'];
-    $streetNumber = $_POST['street_number'];
-    $postCode = $_POST['post_code'];
-    $city = $_POST['city'];
-    $phoneNumber = $_POST['phone_number'];
-
-    $values = ['email' => $email, 'first_name' => $firstName,'given_name' => $givenName, 'street_name' => $streetName,
-        'street_number' => $streetNumber, 'post_code' => $postCode,'city' => $city, 'phone_number' => $phoneNumber, 'password' => $password, 'repeat_password' => $repeatPassword];
-
+    $values = setValues($_POST);
     try {
         $error = invalidInputValues($conn, $values);
 
@@ -56,9 +42,9 @@ if (isset($_POST['update'])) {
         }
 
         unset($values['repeat_password']);
-        $values['password'] = hashPassword($password);
+        $values['password'] = hashPassword($values['password']);
         $updatedValues = updateUserByEmail($conn, $currentUserEmail, $values);
-        header("location: ../details.php?email=" . $currentUserEmail . "&error=none");
+        header("location: ../details.php?email=" . $currentUserEmail . "&error=updated");
         exit();
     } catch (Exception $e) {
         header("location: ../details.php?email=" . $currentUserEmail . "&error=stmtFailed");
