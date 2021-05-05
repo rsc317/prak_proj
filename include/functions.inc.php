@@ -1,19 +1,24 @@
 <?php
+//@TODO find a solution to avoid absolute paths
 require_once 'C:\Users\duman\PhpstormProjects\prak_proj\vendor\autoload.php';
 require_once 'C:\Users\duman\PhpstormProjects\prak_proj\entities\User.php';
 
 use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\Exception;
+
 
 const GUSER = 'phptestm01@gmail.com';
 const GPWD = 'testphpp';
 
+const VALIDATIONTYPE = ["email" => 'email', "first_name" => 'name', "given_name" => 'name', "street_name" => 'name',
+    "street_number" => 'none', "post_code" => 'number', "city" => 'name', "phone_number" => 'number',
+    "password" => 'password', "repeat_password" => 'password', "active" => 'none', "vkey" => 'none', "rights" => 'none'];
+
 /**
  * @param PDO $conn
  * @param $values
- * @return User
+ * @return Boolean
  */
-function insertUser(PDO $conn, &$values): User
+function insertUser(PDO $conn, &$values): bool
 {
     $values['active'] = 0;
     $values['vkey'] = createVkey($values['email']);
@@ -38,13 +43,30 @@ function insertUser(PDO $conn, &$values): User
  */
 function getUser(PDO $conn, string $email): User
 {
-    try {
-        $stmt = $conn->prepare("SELECT * FROM user WHERE email =:email;");
-        $stmt->execute(['email' => $email]);
-        return $stmt->fetchObject("User");
-    } catch (PDOException $exception) {
-        throw $exception;
+    $stmt = $conn->prepare("SELECT * FROM user WHERE email =:email;");
+    $stmt->execute(['email' => $email]);
+    return $stmt->fetchObject("User");
+}
+
+/**
+ * @param PDO $conn
+ * @param $values
+ * @return array
+ */
+function getUsersBySearch(PDO $conn, $values): array
+{
+    $sql_array = [];
+    foreach ($values as $key => $value) {
+        if ("" !== trim($value)) {
+            $sql_array[] = $key . '=:' . $key;
+        } else {
+            unset($values[$key]);
+        }
     }
+
+    $stmt = $conn->prepare("SELECT email, first_name FROM user WHERE ". join(" OR ", $sql_array));
+    $stmt->execute($values);
+    return $stmt->fetchAll();
 }
 
 /**
@@ -80,47 +102,67 @@ function updateUserByEmail(PDO $conn, string $loggedUsersEmail, &$values): array
 /**
  * @param $conn PDO
  * @param $email string
- * @return false|mixed
+ * @return mixed
  */
-function validateEmail($conn, $email)
+function isEmailAlreadyAssigned(PDO $conn, string $email): mixed
 {
-    try {
-        $stmt = $conn->prepare("SELECT email FROM user WHERE email =:email;");
-        if (!$stmt->execute(['email' => $email])) {
-            return false;
-        }
-        return $stmt->fetch();
-    } catch (PDOException $exception) {
-        throw $exception;
+    $stmt = $conn->prepare("SELECT email FROM user WHERE email =:email;");
+    if (!$stmt->execute(['email' => $email])) {
+        return false;
     }
+    return $stmt->fetch();
 }
 
-//@hashPassword($password) will hash the password @TODO hash with blowfish
-function hashPassword($password)
+/**
+ * @param PDO $conn
+ * @return int
+ */
+function getTotalNumberOfUsers(PDO $conn): int
+{
+    $sql = "SELECT COUNT(*) FROM `user`";
+    $stmt = $conn->query($sql);
+
+    return $stmt->fetchColumn();
+}
+
+/**
+ * @param PDO $conn
+ * @param int $c_page
+ * @param int $rop
+ * @return array
+ */
+function getLimitedUsers(PDO $conn, int $c_page, int $rop): array
+{
+    $sql = "SELECT `email`, `first_name` FROM `user` ORDER BY `email` LIMIT {$c_page},{$rop}";
+    $stmt = $conn->prepare($sql);
+    $stmt->execute();
+
+    return $stmt->fetchAll();
+}
+
+/**
+ * @param string $password
+ * @return string
+ */
+function hashPassword(string $password): string
 {
     return password_hash($password, PASSWORD_DEFAULT);
 }
 
-//@emptyInputSignUp checks if the input values are empty
-function emptyInput($email, $password, $repeat_password, $first_name, $given_name, $street_name, $street_number, $post_code, $city, $phone_numer)
+/**
+ * @param string $name
+ * @return bool
+ */
+function invalidName(string $name): bool
 {
-    if (empty($email) || empty($password) || empty($repeat_password) || empty($first_name) || empty($given_name) || empty($street_name) || empty($street_number) || empty($post_code) || empty($city) || empty($phone_numer)) {
-        return true;
-    }
-    return false;
+    return !(preg_match('/^\pL+$/u', $name));
 }
 
-//@invalidname($name) checks if the input value contains only letters
-function invalidName($name)
-{
-    if (!ctype_alpha($name) || invalidInputStringLen($name)) {
-        return true;
-    }
-    return false;
-}
-
-//@invalidNumber($number) checks if the number contains only numbers
-function invalidNumber($number)
+/**
+ * @param string $number
+ * @return bool
+ */
+function invalidNumber(string $number): bool
 {
     if (!preg_match("/^\d+$/", $number)) {
         return true;
@@ -128,8 +170,11 @@ function invalidNumber($number)
     return false;
 }
 
-//@invalidEmail($email) check if the email is a email adress
-function invalidEmail($email)
+/**
+ * @param string $email
+ * @return bool
+ */
+function invalidEmail(string $email): bool
 {
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         return true;
@@ -138,14 +183,21 @@ function invalidEmail($email)
     return false;
 }
 
-//@passwordMatches(...) checks if passwords matches
-function passwordMatch($password, $repeat_password)
+/**
+ * @param string $password
+ * @param string $repeat_password
+ * @return bool
+ */
+function passwordMatch(string $password, string $repeat_password): bool
 {
     return $password !== $repeat_password;
 }
 
-//@invalidPassword($password) checks if the password contains at least one uppercase, lowercase and number
-function invalidPassword($password)
+/**
+ * @param string $password
+ * @return bool
+ */
+function invalidPassword(string $password): bool
 {
     if (!preg_match('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/', $password)) {
         return true;
@@ -153,8 +205,11 @@ function invalidPassword($password)
     return false;
 }
 
-//@invalidInputStringLen(...) checks if the input value is at least 2 characters long and highest 64 characters long
-function invalidInputStringLen($value)
+/**
+ * @param string $value
+ * @return bool
+ */
+function invalidInputStringLen(string $value): bool
 {
     $value_len = strlen($value);
     if ($value_len < 2 || $value_len > 63) {
@@ -163,12 +218,25 @@ function invalidInputStringLen($value)
     return false;
 }
 
-function createVkey($email)
+/**
+ * @param string $email
+ * @return string
+ */
+function createVkey(string $email): string
 {
     return md5(time() . $email);
 }
 
-function sendMail($to, $from, $from_name, $subject, $body)
+/**
+ * @param $to
+ * @param $from
+ * @param $from_name
+ * @param $subject
+ * @param $body
+ * @return bool
+ * @throws \PHPMailer\PHPMailer\Exception
+ */
+function sendMail($to, $from, $from_name, $subject, $body): bool
 {
     global $error;
     $mail = new PHPMailer();
@@ -193,15 +261,15 @@ function sendMail($to, $from, $from_name, $subject, $body)
     }
 }
 
+/**
+ * @param $email
+ * @param $vkey
+ * @throws \PHPMailer\PHPMailer\Exception
+ */
 function emailVkey($email, $vkey)
 {
     $message = "Hi, please klick on <a href='http://pp.local/verify.php?vkey=$vkey'>Link</a> to verificate your E-Mail address :)";
-
-    if (sendMail($email, 'phptestm01@gmail.com', 'PhPTestProj', 'Email Verifictaion', $message)) {
-        header('location:../mailsended.php');
-    }
-    if (!empty($error)) echo $error;
-
+    sendMail($email, 'phptestm01@gmail.com', 'PhPTestProj', 'Email Verifictaion', $message);
 }
 
 /**
@@ -244,4 +312,105 @@ function updateUserSession(User &$loggedUser, array $values): User
     }
 
     return $loggedUser;
+}
+
+/**
+ * @param string $error
+ * @return string[]
+ */
+function getErrorMsgAndType(string $error): array
+{
+    $errorMsg = '';
+    $alertType = 'alert alert-warning';
+
+    switch ($error) {
+        case 'registered':
+            $errorMsg = 'Thank you, we have send you an email to verify your Account';
+            $alertType = 'alert alert-success';
+            break;
+        case 'updated':
+            $errorMsg = 'Data was successfully updated';
+            $alertType = 'alert alert-success';
+            break;
+        case 'found':
+            $errorMsg = 'Users found';
+            $alertType = 'alert alert-success';
+            break;
+        case 'emailAlreadyExists':
+            $errorMsg = 'This email is already in use!';
+            break;
+        case 'passwordDontMatch':
+            $errorMsg = 'Passwords dont match!';
+            break;
+        case 'invalidPassword':
+            $errorMsg = 'Your password must contain at least one number, one uppercase letter and one lowercase letter';
+            break;
+        case 'invalidName':
+            $errorMsg = 'The name must contain only Letters';
+            break;
+        case 'invalidNumber':
+            $errorMsg = 'Numbers cant be letters';
+            break;
+        case 'stmtFailed':
+            $errorMsg = 'Something went wrong!';
+            $alertType = 'alert alert-danger';
+            break;
+        case 'emptyInput':
+            $errorMsg = 'Fill in all fields!';
+            break;
+        case 'invalidLen':
+            $errorMsg = 'The name must be at least two characters long';
+            break;
+        case 'invalidLogin':
+            $errorMsg = 'The username and password you entered did not match. Please check and try again.';
+            break;
+    }
+
+    return [$errorMsg, $alertType];
+}
+
+/**
+ * @param PDO $conn
+ * @param array $values
+ * @return false|string
+ */
+function invalidInputValues(PDO $conn, array $values): bool|string
+{
+    foreach ($values as $key => $value) {
+        if ("" !== trim($value)) {
+            switch (VALIDATIONTYPE[$key]) {
+                case 'email':
+                    if (isEmailAlreadyAssigned($conn, $value)) {
+                        return 'emailAlreadyExists';
+                    }
+                    if (invalidEmail($value)) {
+                        return 'invalidEmail';
+                    }
+                    break;
+                case 'name':
+                    if (invalidName($value)) {
+                        return 'invalidName';
+                    }
+                    if (invalidInputStringLen($value)) {
+                        return 'invalidLen';
+                    }
+                    break;
+                case 'number':
+                    if (invalidNumber($value)) {
+                        return 'invalidNumber';
+                    }
+                    break;
+                case 'password':
+                    if (passwordMatch($values['password'], $values['repeat_password'])) {
+                        return 'passwordDontMatch';
+                    }
+
+                    if (invalidPassword($values['password'])) {
+                        return 'invalidPassword';
+                    }
+                    break;
+            }
+        }
+    }
+    return false;
 }

@@ -18,70 +18,50 @@ if (isset($_GET['email'])) {
     }
 
     setcookie('user_email', $userEmail, time() + 3600);
-    $user = getUser($conn, $userEmail);
+    try
+    {
+        $user = getUser($conn, $userEmail);
+    }
+    catch (Exception $exception)
+    {
+        header("location: ../listpersons.php?error=stmtFailed");
+        exit();
+    }
 }
 
 if (isset($_POST['update'])) {
-    $current_email = $_COOKIE['user_email'];
+    $currentUserEmail = $_COOKIE['user_email'];
+    $formInputValues = $_POST;
     $email = $_POST['email'];
     $password = $_POST['password'];
-    $repeatPassword = $_POST['repeatPassword'];
-    $firstName = $_POST['firstName'];
-    $givenName = $_POST['givenName'];
-    $streetName = $_POST['streetName'];
-    $streetNumber = $_POST['streetNumber'];
-    $postCode = $_POST['postCode'];
+    $repeatPassword = $_POST['repeat_password'];
+    $firstName = $_POST['first_name'];
+    $givenName = $_POST['given_name'];
+    $streetName =  $_POST['street_name'];
+    $streetNumber = $_POST['street_number'];
+    $postCode = $_POST['post_code'];
     $city = $_POST['city'];
-    $phoneNumber = $_POST['phoneNumber'];
+    $phoneNumber = $_POST['phone_number'];
 
-    if (!(empty($firstName)) && invalidName($firstName) !== false) {
-        header('location: ../mydata.php?error=invalidName');
-        exit();
-    }
-
-    if (!(empty($givenName)) && invalidName($givenName) !== false) {
-        header('location: ../mydata.php?error=invalidName');
-        exit();
-    }
-
-    if (!(empty($streetName)) && invalidName($streetName) !== false) {
-        header('location: ../mydata.php?error=invalidName');
-        exit();
-    }
-
-    if (!(empty($phoneNumber)) && invalidNumber($phoneNumber) !== false) {
-        header('location: ../mydata.php?error=invalidNumber');
-        exit();
-    }
-
-    if (!(empty($email)) && invalidEmail($email) !== false) {
-        header('location: ../mydata.php?error=invalidEmail');
-        exit();
-    }
-
-    if (!(empty($email)) && validateEmail($conn, $email) !== false) {
-        header('location: ../mydata.php?error=emailAlreadyExists');
-        exit();
-    }
-
-    if (!(empty($password)) && passwordMatch($password, $repeatPassword) !== false) {
-        header('location: ../mydata.php?error=passwordDontMatch');
-        exit();
-    }
-
-    if (!(empty($password)) && invalidPassword($password) !== false) {
-        header('location: ../mydata.php?error=invalidPassword');
-        exit();
-    }
-
-    $values = ['email' => $email, 'first_name' => $firstName, 'given_name' => $givenName, 'street_name' => $streetName, 'street_number' => $streetNumber, 'post_code' => $postCode, 'city' => $city, 'phone_number' => $phoneNumber, 'password' => $password];
+    $values = ['email' => $email, 'first_name' => $firstName,'given_name' => $givenName, 'street_name' => $streetName,
+        'street_number' => $streetNumber, 'post_code' => $postCode,'city' => $city, 'phone_number' => $phoneNumber, 'password' => $password, 'repeat_password' => $repeatPassword];
 
     try {
-        $updatedValues = updateUserByEmail($conn, $current_email, $values);
-        header("location: ../details.php?email=".$current_email."?error=none");
+        $error = invalidInputValues($conn, $values);
+
+        if($error)
+        {
+            header('location: ../details.php?email='.$currentUserEmail .'&error=' . $error);
+            exit();
+        }
+
+        unset($values['repeat_password']);
+        $values['password'] = hashPassword($password);
+        $updatedValues = updateUserByEmail($conn, $currentUserEmail, $values);
+        header("location: ../details.php?email=" . $currentUserEmail . "&error=none");
         exit();
     } catch (Exception $e) {
-        header("location: ../details.php?email=".$current_email."?error=stmtFailed");
+        header("location: ../details.php?email=" . $currentUserEmail . "&error=stmtFailed");
         exit();
     }
 }
@@ -98,15 +78,11 @@ if (isset($_POST['delete'])) {
     exit();
 }
 
-function deleteUser($conn, $email) {
+function deleteUser($conn, $email)
+{
     $sql = "DELETE FROM user WHERE email =:email;";
-    try {
-        $stmt = $conn->prepare($sql);
-        $stmt->bindParam(':email', $email);
-        $stmt->execute();
-
-    } catch (PDOException $exception) {
-        throw $exception;
-    }
+    $stmt = $conn->prepare($sql);
+    $stmt->bindParam(':email', $email);
+    $stmt->execute();
 }
 

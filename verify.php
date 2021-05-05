@@ -1,8 +1,8 @@
 <?php
 include_once 'header.php';
 
-require_once 'src/include/connect.php';
-require_once 'src/include/verify.inc.php';
+require_once 'include/connect.php';
+require_once 'include/verify.inc.php';
 
 if(isset($_GET['vkey'])) {
     $vkey = $_GET['vkey'];

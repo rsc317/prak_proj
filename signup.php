@@ -1,9 +1,19 @@
 <?php
 include_once 'header.php';
-session_start();
+require_once 'include/signup.inc.php';
+
 if (isset($_SESSION['loggedUser'])) {
     header("location: ../mydata.php");
     exit();
+}
+
+$alertType = '';
+$errorMsg = '';
+
+if (isset($_GET['error'])) {
+    $errorTypeAndAlert = getErrorMsgAndType($_GET['error']);
+    [$errorMsg, $alertType] = $errorTypeAndAlert;
+
 }
 ?>
 <link href="assets/css/signin.css" rel="stylesheet">
@@ -56,37 +66,14 @@ if (isset($_SESSION['loggedUser'])) {
             <input class="form-control" type="text" name="phone_number" id="phone_number" placeholder="Phonenumber"
                    required>
         </div>
+        <?php echo "<div class='$alertType' role='alert'>$errorMsg</div>"; ?>
         <button class="btn btn-lg btn-primary btn-block" type="submit" name="signup">Sign Up</button>
         <p class="mt-5 mb-3 text-muted text-center">Already have an account?</p>
         <a class="nav-link" href="login.php">Log in Here</a>
 
     </form>
     <?php
-    if (isset($_GET['error'])) {
-
-        if ($_GET['error'] == 'emptyInput') {
-            echo '<p class="text-danger">Fill in all fields!</p>';
-        } else if ($_GET['error'] == 'emailAlreadyExists') {
-            echo '<p class="text-danger">This email is already in use!</p>';
-        } else if ($_GET['error'] == 'passwordDontMatch') {
-            echo '<p class="text-danger">Passwords dont match!</p>';
-        } else if ($_GET['error'] == 'invalidPassword') {
-            echo '<p class="text-danger"Your password must contain at least one number, one uppercase letter and one lowercase letter</p>';
-        } else if ($_GET['error'] == 'invalidName') {
-            echo '<p class="text-danger">The name must contain only Letters and at least 2 characters</p>';
-        } else if ($_GET['error'] == 'invalidNumber') {
-            echo '<p class="text-danger">Numbers cant be letters/p>';
-        } else if ($_GET['error'] == 'invalidStringLen') {
-            echo '<p class="text-danger">The name must be at least two characters long</p>';
-        } else if ($_GET['error'] == 'stmtfailed') {
-            echo '<p class="text-danger">Something went wrong!</p>';
-        } else if ($_GET['error'] == 'none') {
-            echo '<p>You have signed up, please check your emails and verify your account</p>';
-        }
-    }
+    include_once 'footer.php';
     ?>
-<?php
-include_once 'footer.php';
-?>
 
 

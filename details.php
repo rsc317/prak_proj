@@ -3,6 +3,19 @@ include_once 'header.php';
 include_once 'sidenav.php';
 require_once 'include/details.inc.php';
 
+$alertType = '';
+$errorMsg = '';
+
+if(!isset($user))
+{
+    header("location: ../listpersons.php?error=stmtFailed");
+    exit();
+}
+if (isset($_GET['error'])) {
+    $errorTypeAndAlert = getErrorMsgAndType($_GET['error']);
+    [$errorMsg, $alertType] = $errorTypeAndAlert;
+
+}
 ?>
     <main>
         <div class="container">
@@ -14,9 +27,9 @@ require_once 'include/details.inc.php';
                         <label class="sr-only" for="email">E-Mail</label>
                         <?php
                         if (3 == $loggedUser->getRights()|| 2 == $loggedUser->getRights()) {
-                            echo "<input class='form-control' type='email' name'email' id='email' placeholder='$user->getEmail()'>";
+                            echo "<input class='form-control' type='email' name'email' id='email' placeholder='".$user->getEmail()."'>";
                         } else {
-                            echo "<a>$user->getEmail()</a>";
+                            echo "<a>".$user->getEmail()."</a>";
                         }
                         ?>
                     </div>
@@ -109,7 +122,7 @@ require_once 'include/details.inc.php';
                         <label class="sr-only" for="phone_number">Phonenumber</label>
                         <?php
                         if (3 == $loggedUser->getRights() || 2 == $loggedUser->getRights()) {
-                            echo '<input class="form-control" type="number" name="phone_number" id="phone_number"
+                            echo '<input class="form-control" type="text" name="phone_number" id="phone_number"
                        placeholder="' . $user->getPhoneNumber() . '">';
                         } else {
                             echo '<a>' . $user->getPhoneNumber() . '</a>';
@@ -132,7 +145,9 @@ require_once 'include/details.inc.php';
                 </div>";
                 }
                 ?>
+                    <?php echo"<div class='form-row'><div class='$alertType' role='alert'>$errorMsg</div></div>"; ?>
                 <div class="form-row">
+
                 <?php
                 if (3 == $loggedUser->getRights() || 2 == $loggedUser->getRights()) {
                     echo '<div class="form-group col-md-6"><button class="w-100 btn btn-primary btn-lg" type="submit" name="update">Update</button></div>';
@@ -146,27 +161,4 @@ require_once 'include/details.inc.php';
         </div>
     </main>
 <?php
-if (isset($_GET['error'])) {
-
-    if ($_GET['error'] == 'emptyInput') {
-        echo '<p class="text-danger">Fill in all fields!</p>';
-    } else if ($_GET['error'] == 'emailAlreadyExists') {
-        echo '<p class="text-danger">This email is already in use!</p>';
-    } else if ($_GET['error'] == 'passwordDontMatch') {
-        echo '<p class="text-danger">Passwords dont match!</p>';
-    } else if ($_GET['error'] == 'invalidPassword') {
-        echo '<p class="text-danger"Your password must contain at least one number, one uppercase letter and one lowercase letter</p>';
-    } else if ($_GET['error'] == 'invalidName') {
-        echo '<p class="text-danger">The name must contain only Letters and at least 2 characters</p>';
-    } else if ($_GET['error'] == 'invalidNumber') {
-        echo '<p class="text-danger">Numbers cant be letters/p>';
-    } else if ($_GET['error'] == 'invalidStringLen') {
-        echo '<p class="text-danger">The name must be at least two characters long</p>';
-    } else if ($_GET['error'] == 'stmtfailed') {
-        echo '<p class="text-danger">Something went wrong!</p>';
-    } else if ($_GET['error'] == 'none') {
-        echo '<p>Update successful</p>';
-    }
-}
-
 include_once 'footer.php';

@@ -2,6 +2,15 @@
 include_once 'header.php';
 include_once 'sidenav.php';
 require_once 'include/listpersons.inc.php';
+
+$alertType = '';
+$errorMsg = '';
+
+if (isset($_GET['error'])) {
+    $errorTypeAndAlert = getErrorMsgAndType($_GET['error']);
+    [$errorMsg, $alertType] = $errorTypeAndAlert;
+
+}
 ?>
 
     <main>
@@ -23,6 +32,7 @@ require_once 'include/listpersons.inc.php';
             </tr>
         <?php endforeach; ?>
     </table>
+<?php echo "<div class='$alertType' role='alert'>$errorMsg</div>"; ?>
 <?php if (ceil($total_pages / $rop) > 0): ?>
     <div class="fixed-table-pagination" style="">
         <div class="float-left pagination">
