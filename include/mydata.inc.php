@@ -18,8 +18,7 @@ $postCode = $loggedUser->getPostCode();
 $city = $loggedUser->getCity();
 
 if (isset($_POST['update'])) {
-    $values = setValues($_POST);
-
+    $values = $_POST;
     try {
         $error = invalidInputValues($conn, $values);
 
@@ -30,7 +29,6 @@ if (isset($_POST['update'])) {
         }
 
         unset($values['repeat_password']);
-        $values['password'] = hashPassword($values['password']);
         $updatedValues = updateUserByEmail($conn, $loggedUser->getEmail(), $values);
         $loggedUser = updateUserSession($loggedUser, $updatedValues);
         $_SESSION['loggedUser'] = serialize($loggedUser);

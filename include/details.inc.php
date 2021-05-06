@@ -11,6 +11,7 @@ if (isset($_GET['email'])) {
     $userEmail = $_GET['email'];
     $loggedUser = unserialize($_SESSION['loggedUser']);
     $loggedUsersEmail = $loggedUser->getEmail();
+    $loggedUsersRgihts = $loggedUser->getRights();
 
     if ($userEmail == $loggedUsersEmail) {
         header("location: ../mydata.php");
@@ -21,6 +22,14 @@ if (isset($_GET['email'])) {
     try
     {
         $user = getUser($conn, $userEmail);
+        $email = $user->getEmail();
+        $firstName = $user->getFirstName();
+        $givenName = $user->getGivenName();
+        $phoneNumber = $user->getPhoneNumber();
+        $streetName = $user->getStreetName();
+        $streetNumber = $user->getStreetNumber();
+        $postCode = $user->getPostCode();
+        $city = $user->getCity();
     }
     catch (Exception $exception)
     {
@@ -31,7 +40,7 @@ if (isset($_GET['email'])) {
 
 if (isset($_POST['update'])) {
     $currentUserEmail = $_COOKIE['user_email'];
-    $values = setValues($_POST);
+    $values = $_POST;
     try {
         $error = invalidInputValues($conn, $values);
 
@@ -42,9 +51,8 @@ if (isset($_POST['update'])) {
         }
 
         unset($values['repeat_password']);
-        $values['password'] = hashPassword($values['password']);
         $updatedValues = updateUserByEmail($conn, $currentUserEmail, $values);
-        header("location: ../details.php?email=" . $currentUserEmail . "&error=updated");
+        header("location: ../details.php?email=" . $currentUserEmail . "&error=updated".join(";;",$updatedValues));
         exit();
     } catch (Exception $e) {
         header("location: ../details.php?email=" . $currentUserEmail . "&error=stmtFailed");
@@ -62,13 +70,5 @@ if (isset($_POST['delete'])) {
     }
     header("location: ../listpersons.php?error=invalidEmail");
     exit();
-}
-
-function deleteUser($conn, $email)
-{
-    $sql = "DELETE FROM user WHERE email =:email;";
-    $stmt = $conn->prepare($sql);
-    $stmt->bindParam(':email', $email);
-    $stmt->execute();
 }
 

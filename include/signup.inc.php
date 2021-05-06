@@ -2,9 +2,14 @@
 require_once 'functions.inc.php';
 require_once 'connect.php';
 
+if (isset($_SESSION['loggedUser'])) {
+    header("location: ../mydata.php");
+    exit();
+}
+
 if(isset($_POST['signup'])){
 
-    $values = setValues($_POST);
+    $values = $_POST;
 
     try{
         $error = invalidInputValues($conn, $values);

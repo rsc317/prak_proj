@@ -3,9 +3,6 @@ include_once 'header.php';
 include_once 'sidenav.php';
 require_once 'include/mydata.inc.php';
 
-$alertType = '';
-$errorMsg = '';
-
 if (isset($_GET['error'])) {
     $errorTypeAndAlert = getErrorMsgAndType($_GET['error']);
     [$errorMsg, $alertType] = $errorTypeAndAlert;
@@ -82,7 +79,13 @@ if (isset($_GET['error'])) {
                            placeholder="<?php echo $city; ?>">
                 </div>
             </div>
-            <?php echo"<div class='$alertType' role='alert'>$errorMsg</div>"; ?>
+            <?php if (isset($alertType) && ($errorMsg)): ?>
+                <div class='form-row'>
+                    <div class="form-group col-md-12">
+                        <div class='<?php echo $alertType ?>' role='alert'><?php echo $errorMsg ?></div>
+                    </div>
+                </div>
+            <?php endif; ?>
             <button class="w-100 btn btn-primary btn-lg" type="submit" name="update">Update</button>
         </form>
     </div>

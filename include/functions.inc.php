@@ -17,6 +17,7 @@ const VALIDATIONTYPE = ["email" => 'email', "first_name" => 'name', "given_name"
  * @param PDO $conn
  * @param $values
  * @return Boolean
+ * @throws \PHPMailer\PHPMailer\Exception
  */
 function insertUser(PDO $conn, &$values): bool
 {
@@ -31,7 +32,7 @@ function insertUser(PDO $conn, &$values): bool
         emailVkey($values['email'], $values['vkey']);
         $stmt->execute($values);
         return $stmt->fetchObject('User');
-    } catch (PDOException $exception) {
+    } catch (Exception $exception) {
         throw $exception;
     }
 }
@@ -39,9 +40,10 @@ function insertUser(PDO $conn, &$values): bool
 /**
  * @param $conn PDO
  * @param $email string
- * @return User
+ * @return User|bool
+ * @throws Exception
  */
-function getUser(PDO $conn, string $email): User
+function getUser(PDO $conn, string $email): User|bool
 {
     $stmt = $conn->prepare("SELECT * FROM user WHERE email =:email;");
     $stmt->execute(['email' => $email]);
@@ -51,9 +53,8 @@ function getUser(PDO $conn, string $email): User
 /**
  * @param PDO $conn
  * @param $values
- * @return array
  */
-function getUsersBySearch(PDO $conn, $values): array
+function getUsersBySearch(PDO $conn, $values)
 {
     $sql_array = [];
     foreach ($values as $key => $value) {
@@ -64,9 +65,9 @@ function getUsersBySearch(PDO $conn, $values): array
         }
     }
 
-    $stmt = $conn->prepare("SELECT email, first_name FROM user WHERE ". join(" OR ", $sql_array));
+    $stmt = $conn->prepare("SELECT email, first_name FROM user WHERE " . join(" OR ", $sql_array));
     $stmt->execute($values);
-    return $stmt->fetchAll();
+    return $stmt;
 }
 
 /**
@@ -97,6 +98,18 @@ function updateUserByEmail(PDO $conn, string $loggedUsersEmail, &$values): array
     $stmt->execute($values);
     unset($values['useremail']);
     return $values;
+}
+
+/**
+ * @param PDO $conn
+ * @param string $email
+ */
+function deleteUser(PDO $conn, string $email)
+{
+    $sql = "DELETE FROM user WHERE email =:email;";
+    $stmt = $conn->prepare($sql);
+    $stmt->bindParam(':email', $email);
+    $stmt->execute();
 }
 
 /**
@@ -415,23 +428,23 @@ function invalidInputValues(PDO $conn, array $values): bool|string
     return false;
 }
 
-/**
- * @param array $values
- * @return array
- */
-function setValues(array $values): array
-{
-    $email =$values['email'];
-    $password =$values['password'];
-    $repeatPassword =$values['repeat_password'];
-    $firstName =$values['first_name'];
-    $givenName =$values['given_name'];
-    $streetName = $values['street_name'];
-    $streetNumber =$values['street_number'];
-    $postCode =$values['post_code'];
-    $city =$values['city'];
-    $phoneNumber =$values['phone_number'];
-
-    return ['email' => $email, 'first_name' => $firstName,'given_name' => $givenName, 'street_name' => $streetName,
-        'street_number' => $streetNumber, 'post_code' => $postCode,'city' => $city, 'phone_number' => $phoneNumber, 'password' => $password, 'repeat_password' => $repeatPassword];
-}
+///**
+// * @param array $values
+// * @return array
+// */
+//function setValues(array $values): array
+//{
+//    $email = $values['email'];
+//    $password = $values['password'];
+//    $repeatPassword = $values['repeat_password'];
+//    $firstName = $values['first_name'];
+//    $givenName = $values['given_name'];
+//    $streetName = $values['street_name'];
+//    $streetNumber = $values['street_number'];
+//    $postCode = $values['post_code'];
+//    $city = $values['city'];
+//    $phoneNumber = $values['phone_number'];
+//
+//    return ['email' => $email, 'first_name' => $firstName, 'given_name' => $givenName, 'street_name' => $streetName,
+//        'street_number' => $streetNumber, 'post_code' => $postCode, 'city' => $city, 'phone_number' => $phoneNumber, 'password' => $password, 'repeat_password' => $repeatPassword];
+//}

@@ -2,14 +2,6 @@
 include_once 'header.php';
 require_once 'include/signup.inc.php';
 
-if (isset($_SESSION['loggedUser'])) {
-    header("location: ../mydata.php");
-    exit();
-}
-
-$alertType = '';
-$errorMsg = '';
-
 if (isset($_GET['error'])) {
     $errorTypeAndAlert = getErrorMsgAndType($_GET['error']);
     [$errorMsg, $alertType] = $errorTypeAndAlert;
@@ -66,7 +58,11 @@ if (isset($_GET['error'])) {
             <input class="form-control" type="text" name="phone_number" id="phone_number" placeholder="Phonenumber"
                    required>
         </div>
-        <?php echo "<div class='$alertType' role='alert'>$errorMsg</div>"; ?>
+        <?php if (isset($alertType) && ($errorMsg)): ?>
+            <div class="form-floating">
+                <div class='<?php echo $alertType ?>' role='alert'><?php echo $errorMsg ?></div>
+            </div>
+        <?php endif; ?>
         <button class="btn btn-lg btn-primary btn-block" type="submit" name="signup">Sign Up</button>
         <p class="mt-5 mb-3 text-muted text-center">Already have an account?</p>
         <a class="nav-link" href="login.php">Log in Here</a>

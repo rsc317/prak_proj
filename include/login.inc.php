@@ -1,32 +1,36 @@
 <?php
 
-use JetBrains\PhpStorm\NoReturn;
-
 require_once 'connect.php';
 require_once 'functions.inc.php';
+
+if (isset($_SESSION['loggedUser'])) {
+    header("location: ../mydata.php");
+    exit();
+}
 
 if(isset($_POST['login'])) {
     $email = $_POST['email'];
     $password = $_POST['password'];
 
-    loginUser($conn, $email, $password);
+    try {
+        loginUser($conn, $email, $password);
+    } catch (Exception $e) {
+        header('location: ../login.php?error=stmtFailed');
+        exit();
+    }
 }
 
 /**
  * @param PDO $conn
  * @param string $email
  * @param string $password
+ * @throws Exception
  */
-#[NoReturn] function loginUser(PDO $conn, string $email, string $password) {
-    try{
-        $loggedUser = getUser($conn,$email);
-    }
-    catch (Exception $exception)
-    {
-        header('location: ../login.php?error=stmtFailed');
+function loginUser(PDO $conn, string $email, string $password) {
+    if (!$loggedUser = getUser($conn, $email)) {
+        header('location: ../login.php?error=invalidLogin');
         exit();
     }
-
 
     $hashed_password = $loggedUser->getPassword();
     $check_password = password_verify($password,$hashed_password);
