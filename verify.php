@@ -2,13 +2,13 @@
 include_once 'header.php';
 
 require_once 'include/connect.php';
-require_once 'include/verify.inc.php';
+require_once 'include/functions.inc.php';
 
 if(isset($_GET['vkey'])) {
     $vkey = $_GET['vkey'];
     try{
         verifyEmail($conn,$vkey);
-        header("location: ../verified.php?");
+        header("location: ../login.php?error=verified");
         exit();
     }
     catch(Exception $exception)

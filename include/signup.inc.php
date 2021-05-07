@@ -9,7 +9,7 @@ if (isset($_SESSION['loggedUser'])) {
 
 if(isset($_POST['signup'])){
 
-    $values = $_POST;
+    $values = setValues($_POST);
 
     try{
         $error = invalidInputValues($conn, $values);

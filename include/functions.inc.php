@@ -154,6 +154,20 @@ function getLimitedUsers(PDO $conn, int $c_page, int $rop): array
 }
 
 /**
+ * @param PDO $conn
+ * @param string $vkey
+ * @return mixed
+ */
+function verifyEmail(PDO $conn, string $vkey): mixed
+{
+    $stmt = $conn->prepare("UPDATE user SET active=:active WHERE vkey =:vkey;");
+    if (!$stmt->execute(['active' => 1, 'vkey' => $vkey])) {
+        return false;
+    }
+    return $stmt->fetch();
+}
+
+/**
  * @param string $password
  * @return string
  */
@@ -341,6 +355,10 @@ function getErrorMsgAndType(string $error): array
             $errorMsg = 'Thank you, we have send you an email to verify your Account';
             $alertType = 'alert alert-success';
             break;
+        case 'verified':
+            $errorMsg = 'Your account hast been activated, you can now login';
+            $alertType = 'alert alert-success';
+            break;
         case 'updated':
             $errorMsg = 'Data was successfully updated';
             $alertType = 'alert alert-success';
@@ -428,23 +446,23 @@ function invalidInputValues(PDO $conn, array $values): bool|string
     return false;
 }
 
-///**
-// * @param array $values
-// * @return array
-// */
-//function setValues(array $values): array
-//{
-//    $email = $values['email'];
-//    $password = $values['password'];
-//    $repeatPassword = $values['repeat_password'];
-//    $firstName = $values['first_name'];
-//    $givenName = $values['given_name'];
-//    $streetName = $values['street_name'];
-//    $streetNumber = $values['street_number'];
-//    $postCode = $values['post_code'];
-//    $city = $values['city'];
-//    $phoneNumber = $values['phone_number'];
-//
-//    return ['email' => $email, 'first_name' => $firstName, 'given_name' => $givenName, 'street_name' => $streetName,
-//        'street_number' => $streetNumber, 'post_code' => $postCode, 'city' => $city, 'phone_number' => $phoneNumber, 'password' => $password, 'repeat_password' => $repeatPassword];
-//}
+/**
+ * @param array $values
+ * @return array
+ */
+function setValues(array $values): array
+{
+    $email =$values['email'];
+    $password =$values['password'];
+    $repeatPassword =$values['repeat_password'];
+    $firstName =$values['first_name'];
+    $givenName =$values['given_name'];
+    $streetName = $values['street_name'];
+    $streetNumber =$values['street_number'];
+    $postCode =$values['post_code'];
+    $city =$values['city'];
+    $phoneNumber =$values['phone_number'];
+
+    return ['email' => $email, 'first_name' => $firstName,'given_name' => $givenName, 'street_name' => $streetName,
+        'street_number' => $streetNumber, 'post_code' => $postCode,'city' => $city, 'phone_number' => $phoneNumber, 'password' => $password, 'repeat_password' => $repeatPassword];
+}
