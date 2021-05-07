@@ -8,10 +8,8 @@ if (!isset($_SESSION['loggedUser'])) {
     exit();
 }
 
-if(isset($_POST['search'])) {
-
-    $values = $_POST;
-
+function getSearchResults($conn, $values)
+{
     try {
         $error = invalidInputValues($conn, $values);
 
@@ -23,31 +21,25 @@ if(isset($_POST['search'])) {
 
         $stmt = getUsersBySearch($conn, $values);
         if($stmt->rowCount()) {
-            searchResult($stmt);
+            while ($user = $stmt->fetch()){
+                $email = $user['email'];
+                $firstName = $user['first_name'];
+                echo "<tr>
+                  <td>
+                        <a href=details.php?email=$email>$email</a>
+                  </td>
+                  <td>$firstName</td>
+                            </tr>";
+            }
         }
         else
         {
-            header('location: ../search.php?error=stmtFailed');
-            exit();
+            echo "No results found!";
         }
     }
 
     catch (Exception $e) {
         header('location: ../search.php?error=stmtFailed');
         exit();
-    }
-
-}
-
-function searchResult($stmt){
-    while ($user = $stmt->fetch()){
-        $email = $user['email'];
-        $firstName = $user['first_name'];
-        echo "<tr>
-                  <td>
-                        <a href=details.php?email='$email'>$email</a>
-                  </td>
-                  <td>$firstName</td>
-                            </tr>";
     }
 }

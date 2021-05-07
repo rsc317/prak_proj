@@ -17,16 +17,17 @@ if (isset($_GET['error'])) {
     <main>
         <div class="container">
             <br>
-            <h1><?php echo $user->getFirstName() . " " . $user->getGivenName() . " is Active: " . $user->isActive(); ?></h1>
+            <h1><?php echo $firstName . " " . $givenName . " is Active: " . $user->isActive(); ?></h1>
+            <br>
             <form name="myDataForm" id="myDataForm" action="include/details.inc.php" method="post">
                 <div class="form-row">
                     <div class="form-group col-md-12">
-                        <label class="sr-only" for="email">E-Mail</label>
                         <?php if (3 == $loggedUsersRgihts || 2 == $loggedUsersRgihts): ?>
+                            <label class="sr-only" for="email">E-Mail</label>
                             <input class="form-control" type="text" name="email" id="emial"
                                    placeholder="<?php echo $email?>">
                         <?php else: ?>
-                            <a><?php echo $email ?></a
+                            <h2><?php echo $email ?></h2>
                         <?php endif; ?>
                     </div>
                 </div>
@@ -34,84 +35,84 @@ if (isset($_GET['error'])) {
                     <div class="form-row">
                         <div class="form-group col-md-6">
                             <label class="sr-only" for="password">Password</label>
-                            <input class="form-control" type="text" name="password" id="password"
+                            <input class="form-control" type="password" name="password" id="password"
                                    placeholder="Password">
                         </div>
                         <div class="form-group col-md-6">
                             <label class="sr-only" for="repeat_password">Repeat Password</label>
-                            <input class="form-control" type="text" name="repeat_password" id="repeat_password"
+                            <input class="form-control" type="password" name="repeat_password" id="repeat_password"
                                    placeholder="Repeat Password">
                         </div>
                     </div>
                 <?php endif ?>
                 <div class="form-row">
-                    <div class="form-group col-md-12">
-                        <label class="sr-only" for="first_name">Firstname</label>
+                    <div class="form-group col-md-6">
                         <?php if (3 == $loggedUsersRgihts || 2 == $loggedUsersRgihts): ?>
+                            <label class="sr-only" for="first_name">Firstname</label>
                             <input class="form-control" type="text" name="first_name" id="first_name"
                                    placeholder="<?php echo $firstName ?>">
                         <?php else: ?>
-                            <a><?php echo $firstName ?></a
+                            <h2><?php echo $firstName ?></h2>
                         <?php endif; ?>
                     </div>
-                    <div class="form-group col-md-12">
-                        <label class="sr-only" for="given_name">Givenname</label>
+                    <div class="form-group col-md-6">
                         <?php if (3 == $loggedUsersRgihts || 2 == $loggedUsersRgihts): ?>
+                            <label class="sr-only" for="given_name">Givenname</label>
                             <input class="form-control" type="text" name="given_name" id="given_name"
                                    placeholder="<?php echo $givenName ?>">
                         <?php else: ?>
-                            <a><?php echo $givenName ?></a
+                            <h2><?php echo $givenName ?></h2>
                         <?php endif; ?>
                     </div>
                 </div>
                 <div class="form-row">
                     <div class="form-group col-md-9">
-                        <label class="sr-only" for="street_name">Street</label>
                         <?php if (3 == $loggedUsersRgihts || 2 == $loggedUsersRgihts): ?>
+                            <label class="sr-only" for="street_name">Street</label>
                             <input class="form-control" type="text" name="street_name" id="street_name"
                                    placeholder="<?php echo $streetName ?>">
                         <?php else: ?>
-                            <a><?php echo $streetName ?></a
+                            <h2><?php echo $streetName ?></h2>
                         <?php endif; ?>
                     </div>
                     <div class="form-group col-md-3">
-                        <label class="sr-only" for="street_number">Number</label>
                         <?php if (3 == $loggedUsersRgihts || 2 == $loggedUsersRgihts): ?>
+                            <label class="sr-only" for="street_number">Number</label>
                             <input class="form-control" type="text" name="street_number" id="street_number"
                                    placeholder="<?php echo $streetNumber ?>">
                         <?php else: ?>
-                            <a><?php echo $streetNumber ?></a
+                            <h2><?php echo $streetNumber ?></h2>
                         <?php endif; ?>
                     </div>
                 </div>
                 <div class="form-row">
                     <div class="form-group col-md-8">
-                        <label class="sr-only" for="post_code">Postcode</label>
                         <?php if (3 == $loggedUsersRgihts || 2 == $loggedUsersRgihts): ?>
+                            <label class="sr-only" for="post_code">Postcode</label>
                             <input class="form-control" type="text" name="post_code" id="post_code"
                                    placeholder="<?php echo $postCode ?>">
                         <?php else: ?>
-                            <a><?php echo $postCode ?></a
+                            <h2><?php echo $postCode ?></h2>
                         <?php endif; ?>
                     </div>
                     <div class="form-group col-md-4">
-                        <label class="sr-only" for="city">City</label>
                         <?php if (3 == $loggedUsersRgihts || 2 == $loggedUsersRgihts): ?>
+                            <label class="sr-only" for="city">City</label>
                             <input class="form-control" type="text" name="city" id="city"
                                    placeholder="<?php echo $city ?>">
                         <?php else: ?>
-                            <a><?php echo $city ?></a
+                            <h2><?php echo $city ?></h2>
                         <?php endif; ?>
                     </div>
                 </div>
                 <div class="form-row">
                     <div class="form-group col-md-9">
-                        <label class="sr-only" for="phone_number">Phonenumber</label>
                         <?php if (3 == $loggedUsersRgihts || 2 == $loggedUsersRgihts): ?>
+                            <label class="sr-only" for="phone_number">Phonenumber</label>
                             <input class="form-control" type="text" name="phone_number" id="phone_number"
                                    placeholder="<?php echo $phoneNumber ?>">
                         <?php else: ?>
-                            <a><?php echo $phoneNumber ?></a
+                            <h2><?php echo $phoneNumber ?></h2>
                         <?php endif; ?>
                     </div>
                     <?php if (3 == $loggedUsersRgihts): ?>

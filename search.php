@@ -6,7 +6,6 @@ require_once 'include\search.inc.php';
 if (isset($_GET['error'])) {
     $errorTypeAndAlert = getErrorMsgAndType($_GET['error']);
     [$errorMsg, $alertType] = $errorTypeAndAlert;
-
 }
 
 ?>
@@ -14,7 +13,7 @@ if (isset($_GET['error'])) {
         <div class="container">
 
             <h1 class="mb-3">Search</h1>
-            <form name="searchForm" id="searchForm" action="include/search.inc.php" method="post">
+            <form name="searchForm" id="searchForm" action="search.php" method="post">
                 <div class="form-row">
                     <div class="form-group col-md-12">
                         <label class="sr-only" for="email">E-Mail</label>
@@ -61,6 +60,24 @@ if (isset($_GET['error'])) {
                 <button class="w-100 btn btn-primary btn-lg" type="submit" name="search">Search</button>
             </form>
         </div>
+        <?php if (isset($_POST['search'])): ?>
+        <br>
+            <div class="container">
+                <table class="table table-striped">
+                    <th style="text-align: center; " colspan="2">
+                        <div class="th-inner ">LIST PERSONS</div>
+                        <div class="fht-cell"></div>
+                    </th>
+                    <tr>
+                        <th scope="col">E-Mail</th>
+                        <th scope="col">Name</th>
+                    </tr>
+                    <?php
+                    getSearchResults($conn, $_POST);
+                    ?>
+                </table>
+            </div>
+        <?php endif; ?>
     </main>
 <?php
 include_once 'footer.php';

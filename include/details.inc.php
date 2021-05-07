@@ -52,7 +52,7 @@ if (isset($_POST['update'])) {
 
         unset($values['repeat_password']);
         $updatedValues = updateUserByEmail($conn, $currentUserEmail, $values);
-        header("location: ../details.php?email=" . $currentUserEmail . "&error=updated".join(";;",$updatedValues));
+        header("location: ../details.php?email=" . $currentUserEmail . "&error=updated");
         exit();
     } catch (Exception $e) {
         header("location: ../details.php?email=" . $currentUserEmail . "&error=stmtFailed");
